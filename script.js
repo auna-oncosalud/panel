@@ -38,7 +38,7 @@ const PAGE_SIZE = 20;
    SESIÓN — localStorage con expiración 8 horas
 ══════════════════════════════════════════════ */
 const SESSION_KEY     = "auna_session";
-const SESSION_MINUTES = 10; // 8 horas — una jornada laboral completa
+const SESSION_MINUTES = 3; // 8 horas — una jornada laboral completa
 
 function guardarSesion(usuario, rol, agente) {
   const sesion = {
@@ -118,23 +118,85 @@ function exigirSesion() {
   return null;
 }
 
+
+/* ══════════════════════════════════════════════
+   ALERTAS UI
+══════════════════════════════════════════════ */
+
+function mostrarAlertaSesionExpirada() {
+  let alerta = document.getElementById("session-expired-alert");
+
+  if (!alerta) {
+    alerta = document.createElement("div");
+    alerta.id = "session-expired-alert";
+
+    alerta.style.position = "fixed";
+    alerta.style.top = "1.5rem";
+    alerta.style.left = "50%";
+    alerta.style.transform = "translateX(-50%)";
+    alerta.style.background = "#ef4444";
+    alerta.style.color = "white";
+    alerta.style.padding = "14px 22px";
+    alerta.style.borderRadius = "12px";
+    alerta.style.fontWeight = "600";
+    alerta.style.zIndex = "9999";
+    alerta.style.boxShadow = "0 10px 25px rgba(0,0,0,0.25)";
+
+    alerta.innerText = "Tu sesión expiró. Inicia sesión nuevamente.";
+
+    document.body.appendChild(alerta);
+  }
+
+  alerta.style.display = "block";
+
+  setTimeout(() => {
+    alerta.style.display = "none";
+  }, 4000);
+}
+
 // Verificar sesión al cargar la página
 (function verificarSesionAlCargar() {
   const sesion = leerSesion();
-  if (sesion) {
-    // Restaurar la UI directamente sin pedir login
-    mostrarPantallaFormulario({
-      usuario: sesion.usuario,
-      rol:     sesion.rol,
-      agente:  sesion.agente,
-    });
+
+  // ❌ No hay sesión válida → FORZAR LOGIN
+  if (!sesion || !sesion.usuario) {
+    console.warn("Sesión expirada al cargar");
+
+    borrarSesion();
+
+    document.getElementById("form-section").style.display  = "none";
+    document.getElementById("login-section").style.display = "block";
+
+    mostrarAlertaSesionExpirada();
+
+    return;
   }
+
+  // ✅ Sesión válida → continuar normal
+  mostrarPantallaFormulario({
+    usuario: sesion.usuario,
+    rol:     sesion.rol,
+    agente:  sesion.agente,
+  });
+
 })();
 
-// Renovar expiración con cualquier interacción del usuario
-document.addEventListener("click",    () => leerSesion());
-document.addEventListener("keydown",  () => leerSesion());
-document.addEventListener("touchstart", () => leerSesion());
+function manejarActividadUsuario() {
+  const sesion = leerSesion();
+
+  if (!sesion || !sesion.usuario) {
+    console.warn("Actividad detectada sin sesión válida");
+
+    bloquearAccionesCriticas();
+    mostrarAlertaSesionExpirada();
+    return;
+  }
+}
+
+// 👇 después de definir la función
+document.addEventListener("click", manejarActividadUsuario);
+document.addEventListener("keydown", manejarActividadUsuario);
+document.addEventListener("touchstart", manejarActividadUsuario);
 
 /* ══════════════════════════════════════════════
    SHOW / HIDE PASSWORD
