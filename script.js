@@ -38,7 +38,7 @@ const PAGE_SIZE = 20;
    SESIÓN — localStorage con expiración 8 horas
 ══════════════════════════════════════════════ */
 const SESSION_KEY     = "auna_session";
-const SESSION_MINUTES = 480; // 8 horas — una jornada laboral completa
+const SESSION_MINUTES = 10; // 8 horas — una jornada laboral completa
 
 function guardarSesion(usuario, rol, agente) {
   const sesion = {
