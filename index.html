@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auna — Portal de Asesores</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auna — Portal de Asesores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
+
 <body>
 
   <section id="login-section" class="screen active">
@@ -21,11 +25,13 @@
 
       <div class="login-brand">
         <div class="brand-inner">
-          <div class="brand-badge">Portal Asesores</div>
-          <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/v1774998253/468951353_1098106335437147_8489372296479282912_n_insezr.jpg"
-               alt="Auna" class="brand-logo">
+          <div class="brand-badge">Portal de asesores</div>
+          <img
+            src="https://res.cloudinary.com/dwxiuavqd/image/upload/v1774998253/468951353_1098106335437147_8489372296479282912_n_insezr.jpg"
+            alt="Auna" class="brand-logo">
           <h1 class="brand-headline">Gestiona tus<br><em>leads con éxito</em></h1>
-          <p class="brand-sub">Plataforma exclusiva para asesores del equipo Auna. Registra, consulta y haz seguimiento en tiempo real.</p>
+          <p class="brand-sub">Plataforma exclusiva para asesores del equipo Auna. Registra, consulta y haz
+            seguimiento en tiempo real.</p>
           <div class="brand-stats">
             <div class="stat"><span class="stat-num">5</span><span class="stat-label">Productos</span></div>
             <div class="stat-divider"></div>
@@ -51,7 +57,10 @@
           <div class="field-group">
             <label for="username">Usuario</label>
             <div class="input-wrap">
-              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
               <input type="text" id="username" placeholder="Tu nombre de usuario" autocomplete="username">
             </div>
           </div>
@@ -59,16 +68,26 @@
           <div class="field-group">
             <label for="password">Contraseña</label>
             <div class="input-wrap">
-              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
               <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
               <button class="toggle-pass" type="button" aria-label="Mostrar contraseña" onclick="togglePass()">
-                <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
               </button>
             </div>
           </div>
 
           <div id="login-error" class="error-msg" style="display:none">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
             Usuario o contraseña incorrectos
           </div>
 
@@ -78,6 +97,13 @@
               <span class="spinner"></span> Verificando...
             </span>
           </button>
+
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="olvide-clave.html" class="link-btn"
+              style="font-size: 0.85rem; color: var(--blue-600); font-weight: 600; text-decoration: underline; cursor: pointer; display: inline-block;">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
 
           <p class="login-footer-note">¿Problemas para ingresar? Contacta a tu coordinador.</p>
         </div>
@@ -89,18 +115,23 @@
   <section id="form-section" class="screen" style="display:none">
 
     <nav class="topbar">
-      <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/v1774998253/468951353_1098106335437147_8489372296479282912_n_insezr.jpg"
-           alt="Auna" class="topbar-logo">
+      <img
+        src="https://res.cloudinary.com/dwxiuavqd/image/upload/v1774998253/468951353_1098106335437147_8489372296479282912_n_insezr.jpg"
+        alt="Auna" class="topbar-logo">
       <div class="topbar-center">
         <span id="topbar-title">Formulario Barrido</span>
       </div>
       <div class="topbar-right">
-        <div class="user-chip">
+        <div class="user-chip" onclick="abrirModalEquipo()" style="cursor: pointer;" title="Gestionar Equipo">
           <div class="user-avatar" id="user-avatar">A</div>
           <span id="user-name-chip">Asesor</span>
         </div>
         <button class="btn-logout" onclick="logout()" title="Cerrar sesión">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
         </button>
       </div>
     </nav>
@@ -110,23 +141,38 @@
 
         <div class="tab-bar" id="tab-bar-desktop">
           <button class="tab active" id="tab-form" onclick="switchTab('form')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
             Nuevo Lead
           </button>
           <button class="tab" id="tab-records" onclick="switchTab('records')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4"/><path d="M12 3v10m-4-4 4 4 4-4"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4" />
+              <path d="M12 3v10m-4-4 4 4 4-4" />
+            </svg>
             Mis Registros
           </button>
           <button class="tab" id="tab-encuesta" onclick="switchTab('encuesta')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
             Encuesta
           </button>
           <button class="tab" id="tab-cotizador" onclick="switchTab('cotizador')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
             Cotizador
           </button>
           <button class="tab" id="tab-proyeccion" onclick="switchTab('proyeccion')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
             Proyección
           </button>
         </div>
@@ -135,43 +181,70 @@
           <button class="mobile-nav-trigger" id="mobile-nav-trigger" onclick="toggleMobileNav()">
             <div class="mobile-nav-trigger-left">
               <div class="mobile-nav-active-icon" id="mobile-nav-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
               </div>
               <span class="mobile-nav-active-label" id="mobile-nav-label">Nuevo Lead</span>
             </div>
-            <svg class="mobile-nav-chevron" id="mobile-nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="mobile-nav-chevron" id="mobile-nav-chevron" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </button>
           <div class="mobile-nav-menu" id="mobile-nav-menu">
             <button class="mobile-nav-item active" id="mnav-form" onclick="switchTab('form'); closeMobileNav()">
-              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg></div>
               <div class="mobile-nav-item-text">
                 <span class="mobile-nav-item-label">Nuevo Lead</span>
                 <span class="mobile-nav-item-sub">Registrar nuevo cliente potencial</span>
               </div>
             </button>
             <button class="mobile-nav-item" id="mnav-records" onclick="switchTab('records'); closeMobileNav()">
-              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4"/><path d="M12 3v10m-4-4 4 4 4-4"/></svg></div>
+              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4" />
+                  <path d="M12 3v10m-4-4 4 4 4-4" />
+                </svg></div>
               <div class="mobile-nav-item-text">
                 <span class="mobile-nav-item-label">Mis Registros</span>
                 <span class="mobile-nav-item-sub">Ver historial de leads</span>
               </div>
             </button>
             <button class="mobile-nav-item" id="mnav-encuesta" onclick="switchTab('encuesta'); closeMobileNav()">
-              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg></div>
               <div class="mobile-nav-item-text">
                 <span class="mobile-nav-item-label">Encuesta</span>
                 <span class="mobile-nav-item-sub">QR para captura de datos</span>
               </div>
             </button>
             <button class="mobile-nav-item" id="mnav-cotizador" onclick="switchTab('cotizador'); closeMobileNav()">
-              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg></div>
               <div class="mobile-nav-item-text">
                 <span class="mobile-nav-item-label">Cotizador</span>
                 <span class="mobile-nav-item-sub">Calcular precios de planes</span>
               </div>
             </button>
             <button class="mobile-nav-item" id="mnav-proyeccion" onclick="switchTab('proyeccion'); closeMobileNav()">
-              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg></div>
               <div class="mobile-nav-item-text">
                 <span class="mobile-nav-item-label">Proyección</span>
                 <span class="mobile-nav-item-sub">Registrar proyección del día</span>
@@ -184,7 +257,12 @@
           <div class="form-card">
             <div class="form-card-header">
               <div class="form-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
               </div>
               <div>
                 <h2 class="form-card-title" id="form-title">Formulario Barrido</h2>
@@ -197,7 +275,10 @@
 
                 <div class="field-group full-width">
                   <label for="nombre">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
                     Nombre y Apellido
                   </label>
                   <input type="text" id="nombre" placeholder="Nombre completo del cliente" required>
@@ -206,7 +287,10 @@
 
                 <div class="field-group">
                   <label for="telefono">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.07-1.07a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.07-1.07a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
                     Número de Teléfono
                   </label>
                   <input type="tel" id="telefono" placeholder="9 dígitos" maxlength="9" inputmode="numeric" required>
@@ -215,7 +299,12 @@
 
                 <div class="field-group">
                   <label for="edad">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
                     Edad
                   </label>
                   <input type="tel" id="edad" placeholder="Años" maxlength="3" inputmode="numeric" required>
@@ -224,7 +313,10 @@
 
                 <div class="field-group full-width">
                   <label for="producto">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    </svg>
                     Producto de Interés
                   </label>
                   <div class="select-wrap">
@@ -236,14 +328,18 @@
                       <option value="Onco Pro">🟠 Onco Pro</option>
                       <option value="Onco Plus">🔴 Onco Plus</option>
                     </select>
-                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </div>
                   <span class="field-error" id="err-producto"></span>
                 </div>
 
                 <div class="field-group full-width">
                   <label for="temperatura">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                    </svg>
                     Temperatura del Lead
                   </label>
                   <div class="select-wrap">
@@ -253,14 +349,19 @@
                       <option value="Tibio">🟡 Tibio</option>
                       <option value="Caliente">🟢 Caliente</option>
                     </select>
-                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </div>
                   <span class="field-error" id="err-temperatura"></span>
                 </div>
 
                 <div class="field-group full-width">
                   <label for="referencia">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
                     Referencia de Ubicación <span class="optional-tag">Opcional</span>
                   </label>
                   <input type="text" id="referencia" placeholder="Ej: Parque central, frente al banco...">
@@ -268,17 +369,24 @@
 
                 <div class="field-group full-width">
                   <label for="comentarios">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
                     Comentarios <span class="optional-tag">Opcional</span>
                   </label>
                   <textarea id="comentarios" rows="3" placeholder="Observaciones adicionales..."></textarea>
                 </div>
 
-              </div><div class="form-actions">
+              </div>
+              <div class="form-actions">
                 <button type="submit" class="btn-primary btn-submit" id="submit-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2 11 13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
                   <span class="btn-text">Registrar Lead</span>
-                  <span class="btn-loader" style="display:none"><span class="spinner"></span> Guardando...</span>
+                  <span class="btn-loader" style="display:none"><span class="spinner"></span>
+                    Guardando...</span>
                 </button>
               </div>
 
@@ -286,7 +394,10 @@
           </div>
 
           <div id="toast" class="toast" style="display:none">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
             ¡Lead registrado con éxito!
           </div>
         </div>
@@ -294,74 +405,114 @@
         <div id="panel-records" class="tab-panel">
 
           <div id="vista-lista">
-          <div class="records-card">
-            <div class="records-header">
-              <div>
-                <h2 class="records-title">Mis Registros</h2>
-                <p class="records-sub" id="records-sub">Historial de leads registrados</p>
-              </div>
-              <div class="records-actions">
-                <div class="select-wrap admin-only" id="wrap-filtro-asesor" style="display:none">
-                  <select id="filtro-asesor" onchange="aplicarFiltros()" title="Filtrar por asesor">
-                    <option value="todos">Todos los asesores</option>
-                  </select>
-                  <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="records-card">
+              <div class="records-header">
+                <div>
+                  <h2 class="records-title">Mis Registros</h2>
+                  <p class="records-sub" id="records-sub">Historial de leads registrados</p>
                 </div>
-                <button class="btn-stats" id="btn-ir-stats" onclick="mostrarEstadisticas()" style="display:none" title="Ver mis estadísticas">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Estadísticas
-                </button>
-                <button class="btn-export" onclick="exportarExcel()" title="Exportar a Excel">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                  Exportar
-                </button>
-                <button class="btn-refresh" onclick="verRegistros()" title="Actualizar">
-                  <svg id="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-                  Actualizar
+                <div class="records-actions">
+                  <div class="select-wrap admin-only" id="wrap-filtro-asesor" style="display:none">
+                    <select id="filtro-asesor" onchange="aplicarFiltros()" title="Filtrar por asesor">
+                      <option value="todos">Todos los asesores</option>
+                    </select>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                  <button class="btn-stats" id="btn-ir-stats" onclick="mostrarEstadisticas()" style="display:none"
+                    title="Ver mis estadísticas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="20" x2="18" y2="10" />
+                      <line x1="12" y1="20" x2="12" y2="4" />
+                      <line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                    Estadísticas
+                  </button>
+                  <button class="btn-export" onclick="exportarExcel()" title="Exportar a Excel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                      <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    Exportar
+                  </button>
+                  <button class="btn-refresh" onclick="verRegistros()" title="Actualizar">
+                    <svg id="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="1 4 1 10 7 10" />
+                      <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
+                    </svg>
+                    Actualizar
+                  </button>
+                </div>
+              </div>
+
+              <div class="quick-filters">
+                <button class="qf-btn active" id="qf-todos" onclick="setQuickFilter('todos')">Todos</button>
+                <button class="qf-btn" id="qf-hoy" onclick="setQuickFilter('hoy')">Hoy</button>
+                <button class="qf-btn" id="qf-semana" onclick="setQuickFilter('semana')">Esta
+                  semana</button>
+                <button class="qf-btn" id="qf-mes" onclick="setQuickFilter('mes')">Este mes</button>
+                <button class="qf-btn" id="qf-rango" onclick="toggleRangoPersonalizado()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Rango
                 </button>
               </div>
-            </div>
 
-            <div class="quick-filters">
-              <button class="qf-btn active" id="qf-todos"   onclick="setQuickFilter('todos')">Todos</button>
-              <button class="qf-btn"        id="qf-hoy"     onclick="setQuickFilter('hoy')">Hoy</button>
-              <button class="qf-btn"        id="qf-semana"  onclick="setQuickFilter('semana')">Esta semana</button>
-              <button class="qf-btn"        id="qf-mes"     onclick="setQuickFilter('mes')">Este mes</button>
-              <button class="qf-btn"        id="qf-rango"   onclick="toggleRangoPersonalizado()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Rango
-              </button>
-            </div>
-
-            <div class="rango-wrap" id="rango-wrap" style="display:none">
-              <div class="date-filter-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <input type="date" id="fecha-desde" title="Desde" onchange="aplicarFiltros()">
-                <span class="date-sep">→</span>
-                <input type="date" id="fecha-hasta" title="Hasta" onchange="aplicarFiltros()">
-                <button class="btn-clear-dates" onclick="limpiarFechas()" title="Limpiar fechas">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+              <div class="rango-wrap" id="rango-wrap" style="display:none">
+                <div class="date-filter-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <input type="date" id="fecha-desde" title="Desde" onchange="aplicarFiltros()">
+                  <span class="date-sep">→</span>
+                  <input type="date" id="fecha-hasta" title="Hasta" onchange="aplicarFiltros()">
+                  <button class="btn-clear-dates" onclick="limpiarFechas()" title="Limpiar fechas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div class="search-bar-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-input" placeholder="Buscar por nombre, producto, teléfono..." oninput="aplicarFiltros()">
-            </div>
+              <div class="search-bar-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" id="search-input" placeholder="Buscar por nombre, producto, teléfono..."
+                  oninput="aplicarFiltros()">
+              </div>
 
-            <div id="tabla-registros">
-              <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                <p>Haz clic en <strong>Actualizar</strong> para cargar tus registros.</p>
+              <div id="tabla-registros">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18M9 21V9" />
+                  </svg>
+                  <p>Haz clic en <strong>Actualizar</strong> para cargar tus registros.</p>
+                </div>
               </div>
             </div>
           </div>
-          </div><div id="vista-stats" style="display:none">
+          <div id="vista-stats" style="display:none">
 
             <div class="stats-topbar">
               <button class="btn-back-lista" onclick="volverALista()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
                 Volver a registros
               </button>
               <h2 class="stats-topbar-title">Panel de Estadísticas</h2>
@@ -369,23 +520,37 @@
                 <select id="stats-asesor" onchange="renderStats()">
                   <option value="todos">Todos los asesores</option>
                 </select>
-                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </div>
             </div>
 
             <div class="stats-period-bar">
-              <button class="sp-btn active" id="sp-mes"    onclick="setStatsPeriod('mes',    this)">Este mes</button>
-              <button class="sp-btn"        id="sp-semana" onclick="setStatsPeriod('semana', this)">Esta semana</button>
-              <button class="sp-btn"        id="sp-hoy"    onclick="setStatsPeriod('hoy',    this)">Hoy</button>
-              <button class="sp-btn"        id="sp-rango"  onclick="setStatsPeriod('rango',  this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <button class="sp-btn active" id="sp-mes" onclick="setStatsPeriod('mes',    this)">Este
+                mes</button>
+              <button class="sp-btn" id="sp-semana" onclick="setStatsPeriod('semana', this)">Esta
+                semana</button>
+              <button class="sp-btn" id="sp-hoy" onclick="setStatsPeriod('hoy',    this)">Hoy</button>
+              <button class="sp-btn" id="sp-rango" onclick="setStatsPeriod('rango',  this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
                 Rango
               </button>
             </div>
 
             <div id="stats-rango-wrap" style="display:none" class="rango-wrap">
               <div class="date-filter-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
                 <input type="date" id="stats-desde" onchange="renderStats()">
                 <span class="date-sep">→</span>
                 <input type="date" id="stats-hasta" onchange="renderStats()">
@@ -394,16 +559,24 @@
 
             <div id="stats-content"></div>
 
-          </div></div><div id="panel-encuesta" class="tab-panel">
+          </div>
+        </div>
+        <div id="panel-encuesta" class="tab-panel">
           <div class="encuesta-card">
 
             <div class="encuesta-header">
               <div class="encuesta-header-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
               </div>
               <div>
                 <h2 class="encuesta-title">Tu Encuesta Personalizada</h2>
-                <p class="encuesta-sub">Comparte este QR o enlace con tus prospectos para que llenen sus datos</p>
+                <p class="encuesta-sub">Comparte este QR o enlace con tus prospectos para que llenen sus
+                  datos</p>
               </div>
             </div>
 
@@ -411,20 +584,31 @@
 
               <div class="link-section">
                 <label class="link-label">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
                   Enlace único de encuesta
                 </label>
                 <div class="link-box">
                   <span id="encuesta-link-text" class="link-text">Cargando...</span>
                   <button class="btn-copy" id="btn-copy" onclick="copiarLink()" title="Copiar enlace">
-                    <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
                   </button>
                 </div>
               </div>
 
               <div class="qr-section">
                 <label class="link-label">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V5a2 2 0 0 1 2-2h4"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/><path d="M21 15v4a2 2 0 0 1-2 2h-4"/><path d="M9 21H5a2 2 0 0 1-2-2v-4"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9V5a2 2 0 0 1 2-2h4" />
+                    <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+                    <path d="M21 15v4a2 2 0 0 1-2 2h-4" />
+                    <path d="M9 21H5a2 2 0 0 1-2-2v-4" />
+                  </svg>
                   Código QR — escanear con el celular
                 </label>
                 <div class="qr-wrapper">
@@ -436,7 +620,11 @@
                   </div>
                 </div>
                 <button class="btn-download-qr" onclick="descargarQR()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
                   Descargar QR
                 </button>
               </div>
@@ -460,218 +648,337 @@
           </div>
         </div>
 
-      </div><div id="panel-cotizador" class="tab-panel cot-panel">
+      </div>
+      <div id="panel-cotizador" class="tab-panel cot-panel">
 
-          <div class="cot-grid">
+        <div class="cot-grid">
 
-            <div class="cot-controls-card">
+          <div class="cot-controls-card">
 
-              <div class="cot-controls-header">
-                <div class="relative">
-                  <button onclick="cot_toggleMenuModo()" class="cot-modo-btn">
-                    <div class="cot-accent-bar"></div>
-                    <span id="cot_tituloPanel" class="cot-titulo">Panel del Asesor</span>
-                    <svg id="cot_chevronModo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="cot-chevron"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            <div class="cot-controls-header">
+              <div class="relative">
+                <button onclick="cot_toggleMenuModo()" class="cot-modo-btn">
+                  <div class="cot-accent-bar"></div>
+                  <span id="cot_tituloPanel" class="cot-titulo">Panel del Asesor</span>
+                  <svg id="cot_chevronModo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    class="cot-chevron">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div id="cot_menuModo" class="cot-dropdown hidden">
+                  <button onclick="cot_seleccionarModo('asesor')" class="cot-dropdown-item">
+                    <span class="cot-dot cot-dot-active"></span> Panel del Asesor
                   </button>
-                  <div id="cot_menuModo" class="cot-dropdown hidden">
-                    <button onclick="cot_seleccionarModo('asesor')" class="cot-dropdown-item">
-                      <span class="cot-dot cot-dot-active"></span> Panel del Asesor
-                    </button>
-                    <button onclick="cot_seleccionarModo('cliente')" class="cot-dropdown-item">
-                      <span class="cot-dot cot-dot-inactive"></span> Cotización de cliente
-                    </button>
-                  </div>
-                </div>
-                <div class="cot-counter-wrap">
-                  <button onclick="cot_cambiarIntegrantes(-1)" class="cot-counter-btn">−</button>
-                  <span id="cot_contadorDisplay" class="cot-counter-num">1</span>
-                  <button onclick="cot_cambiarIntegrantes(1)" class="cot-counter-btn">+</button>
+                  <button onclick="cot_seleccionarModo('cliente')" class="cot-dropdown-item">
+                    <span class="cot-dot cot-dot-inactive"></span> Cotización de cliente
+                  </button>
                 </div>
               </div>
+              <div class="cot-counter-wrap">
+                <button onclick="cot_cambiarIntegrantes(-1)" class="cot-counter-btn">−</button>
+                <span id="cot_contadorDisplay" class="cot-counter-num">1</span>
+                <button onclick="cot_cambiarIntegrantes(1)" class="cot-counter-btn">+</button>
+              </div>
+            </div>
 
-              <button id="cot_btnActuarial" onclick="cot_toggleActuarial()" class="cot-actuarial-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <div class="cot-actuarial-text">
-                  <span class="cot-actuarial-label">Edad Actuarial</span>
-                  <span class="cot-actuarial-sub">Calcula la edad redondeada al año más cercano</span>
-                </div>
-                <span id="cot_actuarial-status" class="cot-actuarial-status off">Desactivado</span>
-              </button>
+            <button id="cot_btnActuarial" onclick="cot_toggleActuarial()" class="cot-actuarial-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <div class="cot-actuarial-text">
+                <span class="cot-actuarial-label">Edad Actuarial</span>
+                <span class="cot-actuarial-sub">Calcula la edad redondeada al año más cercano</span>
+              </div>
+              <span id="cot_actuarial-status" class="cot-actuarial-status off">Desactivado</span>
+            </button>
 
+            <div class="field-group">
+              <label class="field-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                </svg>
+                Tipo de Plan
+              </label>
+              <div class="select-wrap">
+                <select id="cot_planGlobal" onchange="cot_actualizarTodoPorPlan()" class="cot-select">
+                  <option value="Plan Auna salud Classic">Plan Auna salud Classic</option>
+                  <option value="Plan Auna salud Premium">Plan Auna salud Premium</option>
+                  <option value="Plan Auna salud Senior">Plan Auna salud Senior</option>
+                  <option value="Onco Pro">Onco Pro</option>
+                  <option value="Onco Plus">Onco Plus</option>
+                </select>
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
+                Método de Pago
+              </label>
+              <div class="select-wrap">
+                <select id="cot_metodoPago" onchange="cot_actualizarTodoPorPlan()" class="cot-select">
+                  <option value="credito">Tarjeta de Crédito</option>
+                  <option value="debito">Tarjeta de Débito</option>
+                </select>
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="cot_nombreContratante">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Nombre del contratante (opcional)
+              </label>
+              <div class="input-wrap">
+                <input type="text" id="cot_nombreContratante" placeholder="Ej: Juan Pérez"
+                  oninput="cot_actualizarContratante()" autocomplete="off">
+              </div>
+            </div>
+
+
+            <div id="cot_contenedorIntegrantes" class="cot-integrantes-wrap"></div>
+
+            <div class="cot-extras-grid">
               <div class="field-group">
                 <label class="field-label">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                  Tipo de Plan
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Vence el:
                 </label>
-                <div class="select-wrap">
-                  <select id="cot_planGlobal" onchange="cot_actualizarTodoPorPlan()" class="cot-select">
-                    <option value="Plan Auna salud Classic">Plan Auna salud Classic</option>
-                    <option value="Plan Auna salud Premium">Plan Auna salud Premium</option>
-                    <option value="Plan Auna salud Senior">Plan Auna salud Senior</option>
-                    <option value="Onco Pro">Onco Pro</option>
-                    <option value="Onco Plus">Onco Plus</option>
-                  </select>
-                  <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
+                <input type="date" id="cot_fechaLimite" onchange="cot_actualizarPreview()" class="cot-input-date">
               </div>
-
-              <div id="cot_contenedorIntegrantes" class="cot-integrantes-wrap"></div>
-
-              <div class="cot-extras-grid">
-                <div class="field-group">
-                  <label class="field-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Vence el:
-                  </label>
-                  <input type="date" id="cot_fechaLimite" onchange="cot_actualizarPreview()" class="cot-input-date">
-                </div>
-                <div class="field-group">
-                  <label class="field-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                    Beneficio adicional:
-                  </label>
-                  <input type="text" id="cot_beneficio" placeholder="Ej: + 1 mes gratis" oninput="cot_actualizarPreview()" class="cot-input-text">
-                </div>
-              </div>
-
-              <div id="cot_botonesAsesor" class="cot-btns">
-                <button onclick="cot_exportarCotizacion(true)" class="btn-primary cot-btn-main">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Descargar Con Descuento
-                </button>
-                <button onclick="cot_exportarCotizacion(false)" class="cot-btn-secondary">
-                  Descargar Sin Descuento
-                </button>
-              </div>
-              <div id="cot_botonesCliente" class="cot-btns hidden">
-                <button onclick="cot_exportarCotizacion(false)" class="btn-primary cot-btn-main">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Descargar Cotización
-                </button>
-              </div>
-
-            </div><div class="cot-preview-wrap">
-              <div class="cot-preview-scaler">
-                <div id="cot_cotizacion-final" class="cot-card">
-
-                  <div class="cot-card-top">
-                    <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/f_auto,q_auto/AUNA_1_cfdhdt" alt="Auna" class="cot-logo" crossorigin="anonymous">
-                    <span class="cot-badge-oficial">Cotización Oficial</span>
-                  </div>
-
-                  <div class="cot-card-subtitle">
-                    <h3>Tu bienestar y el de tu familia es nuestra prioridad 🩺💙</h3>
-                  </div>
-
-                  <div class="cot-plan-banner">
-                    <p class="cot-plan-label">Plan Protegido</p>
-                    <h4 id="cot_prev-plan">Plan Auna salud Classic</h4>
-                  </div>
-
-                  <div id="cot_lista-detallada" class="cot-lista"></div>
-
-                  <div id="cot_bloque-descuento">
-                    <div class="cot-total-box">
-                      <p class="cot-total-label">Inversión mensual total</p>
-                      <div class="cot-total-amounts">
-                        <span id="cot_total-promo" class="cot-amount-promo">S/ 0.00</span>
-                        <span id="cot_total-reg"   class="cot-amount-reg">S/ 0.00</span>
-                      </div>
-                      <div class="cot-oferta-tag">Oferta Exclusiva</div>
-                    </div>
-                    <p class="cot-vence" id="cot_texto-vence">Vence el --</p>
-                    <div id="cot_area-beneficio" class="cot-beneficio hidden">
-                      <span class="cot-beneficio-icon">🎁</span>
-                      <div>
-                        <p class="cot-beneficio-title">Beneficio Exclusivo:</p>
-                        <p id="cot_prev-beneficio" class="cot-beneficio-val"></p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="cot_bloque-regular" class="cot-total-regular hidden">
-                    <p class="cot-total-label-reg">Inversión mensual regular</p>
-                    <span id="cot_total-solo-reg" class="cot-amount-solo-reg">S/ 0.00</span>
-                  </div>
-
-                  <div class="cot-card-spacer"></div>
-
-                  <div class="cot-footer">
-                    <p>Tu salud en las mejores manos.</p>
-                  </div>
-
-                </div></div>
-            </div></div></div><div id="panel-proyeccion" class="tab-panel">
-          <div class="proy-card">
-
-            <div class="proy-header" id="proy-header-asesor">
-              <div class="proy-header-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              </div>
-              <div>
-                <h2 class="proy-title">Proyección del Día</h2>
-                <p class="proy-sub" id="proy-fecha-sub">Cargando...</p>
+              <div class="field-group">
+                <label class="field-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 12V22H4V12" />
+                    <path d="M22 7H2v5h20V7z" />
+                    <path d="M12 22V7" />
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+                  </svg>
+                  Beneficio adicional:
+                </label>
+                <input type="text" id="cot_beneficio" placeholder="Ej: + 1 mes gratis" oninput="cot_actualizarPreview()"
+                  class="cot-input-text">
               </div>
             </div>
 
-            <div class="proy-header proy-header-admin" id="proy-header-admin" style="display:none">
-              <div class="proy-header-icon" style="background:rgba(255,255,255,0.18)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-              </div>
-              <div style="flex:1">
-                <h2 class="proy-title">Proyecciones del Día — Todos los Asesores</h2>
-                <p class="proy-sub" id="proy-admin-fecha">Hoy</p>
-              </div>
-              <div class="proy-kpi-total">
-                <div class="proy-kpi-num" id="proy-total-unidades">0</div>
-                <div class="proy-kpi-label">unidades proyectadas</div>
-              </div>
+            <div id="cot_botonesAsesor" class="cot-btns">
+              <button onclick="cot_exportarCotizacion(true)" class="btn-primary cot-btn-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Descargar Con Descuento
+              </button>
+              <button onclick="cot_exportarCotizacion(false)" class="cot-btn-secondary">
+                Descargar Sin Descuento
+              </button>
+              <button onclick="window.open('https://linkventa.auna.pe/iniciar-sesion/', '_blank')" class="cot-btn-pago">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Generar link de pago
+              </button>
             </div>
-
-            <div id="proy-loading" class="proy-loading-state">
-              <div class="loading-dots"><span></span><span></span><span></span></div>
-              <p>Cargando proyección...</p>
-            </div>
-
-            <div id="proy-preview-view" style="display:none">
-              <div id="proy-preview-tabla"></div>
-              <div class="proy-preview-actions">
-                <button class="proy-btn-add" onclick="proy_mostrarEditor()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  Editar / Agregar prospecto
-                </button>
-              </div>
-            </div>
-
-            <div id="proy-asesor-view" style="display:none">
-              <div id="proy-filas-wrap"></div>
-              <div class="proy-add-row">
-                <button class="proy-btn-add" onclick="proy_agregarFila()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Agregar otro prospecto
-                </button>
-              </div>
-              <div class="proy-save-bar">
-                <button class="btn-primary proy-btn-save" id="proy-btn-save" onclick="proy_guardar()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                  <span class="btn-text">Guardar Proyección</span>
-                  <span class="btn-loader" style="display:none"><span class="spinner"></span> Guardando...</span>
-                </button>
-              </div>
-            </div>
-
-            <div id="proy-admin-view" style="display:none">
-              <div class="proy-admin-download-bar">
-                <button class="btn-export proy-download-btn" onclick="proy_descargarExcel()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                  Descargar Excel
-                </button>
-              </div>
-              <div id="proy-admin-tabla"></div>
+            <div id="cot_botonesCliente" class="cot-btns hidden">
+              <button onclick="cot_exportarCotizacion(false)" class="btn-primary cot-btn-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Descargar Cotización
+              </button>
+              <button onclick="window.open('https://linkventa.auna.pe/iniciar-sesion/', '_blank')" class="cot-btn-pago">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Generar link de pago
+              </button>
             </div>
 
           </div>
-        </div></main>
+          <div class="cot-preview-wrap">
+            <div class="cot-preview-scaler">
+              <div id="cot_cotizacion-final" class="cot-card">
+
+                <div class="cot-card-top">
+                  <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/f_auto,q_auto/AUNA_1_cfdhdt" alt="Auna"
+                    class="cot-logo" crossorigin="anonymous">
+                  <span class="cot-badge-oficial">Cotización Oficial</span>
+                </div>
+
+                <div class="cot-card-subtitle">
+                  <h3>Tu bienestar y el de tu familia es nuestra prioridad 🩺💙</h3>
+                </div>
+
+                <div class="cot-plan-banner">
+                  <p class="cot-plan-label">Plan Protegido</p>
+                  <h4 id="cot_prev-plan">Plan Auna salud Classic</h4>
+                </div>
+
+                <div id="cot_nombre-contratante-box" class="cot-contratante-box" style="display: none;">
+                  <p class="cot-contratante-label">Titular / Contratante:</p>
+                  <p id="cot_prev-contratante" class="cot-contratante-name"></p>
+                </div>
+
+                <div id="cot_lista-detallada" class="cot-lista"></div>
+
+
+                <div id="cot_bloque-descuento">
+                  <div class="cot-total-box">
+                    <p class="cot-total-label">Inversión mensual total</p>
+                    <div class="cot-total-amounts">
+                      <span id="cot_total-promo" class="cot-amount-promo">S/ 0.00</span>
+                      <span id="cot_total-reg" class="cot-amount-reg">S/ 0.00</span>
+                    </div>
+                    <div class="cot-oferta-tag">Oferta Exclusiva</div>
+                  </div>
+                  <p class="cot-vence" id="cot_texto-vence">Vence el --</p>
+                  <div id="cot_area-beneficio" class="cot-beneficio hidden">
+                    <span class="cot-beneficio-icon">🎁</span>
+                    <div>
+                      <p class="cot-beneficio-title">Beneficio Exclusivo:</p>
+                      <p id="cot_prev-beneficio" class="cot-beneficio-val"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="cot_bloque-regular" class="cot-total-regular hidden">
+                  <p class="cot-total-label-reg">Inversión mensual regular</p>
+                  <span id="cot_total-solo-reg" class="cot-amount-solo-reg">S/ 0.00</span>
+                </div>
+
+                <div class="cot-card-spacer"></div>
+
+                <div class="cot-footer">
+                  <p>Tu salud en las mejores manos.</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="panel-proyeccion" class="tab-panel">
+        <div class="proy-card">
+
+          <div class="proy-header" id="proy-header-asesor">
+            <div class="proy-header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="proy-title">Proyección del Día</h2>
+              <p class="proy-sub" id="proy-fecha-sub">Cargando...</p>
+            </div>
+          </div>
+
+          <div class="proy-header proy-header-admin" id="proy-header-admin" style="display:none">
+            <div class="proy-header-icon" style="background:rgba(255,255,255,0.18)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+            </div>
+            <div style="flex:1">
+              <h2 class="proy-title">Proyecciones del Día — Todos los Asesores</h2>
+              <p class="proy-sub" id="proy-admin-fecha">Hoy</p>
+            </div>
+            <div class="proy-kpi-total">
+              <div class="proy-kpi-num" id="proy-total-unidades">0</div>
+              <div class="proy-kpi-label">unidades proyectadas</div>
+            </div>
+          </div>
+
+          <div id="proy-loading" class="proy-loading-state">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <p>Cargando proyección...</p>
+          </div>
+
+          <div id="proy-preview-view" style="display:none">
+            <div id="proy-preview-tabla"></div>
+            <div class="proy-preview-actions">
+              <button class="proy-btn-add" onclick="proy_mostrarEditor()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                Editar / Agregar prospecto
+              </button>
+            </div>
+          </div>
+
+          <div id="proy-asesor-view" style="display:none">
+            <div id="proy-filas-wrap"></div>
+            <div class="proy-add-row">
+              <button class="proy-btn-add" onclick="proy_agregarFila()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Agregar otro prospecto
+              </button>
+            </div>
+            <div class="proy-save-bar">
+              <button class="btn-primary proy-btn-save" id="proy-btn-save" onclick="proy_guardar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                <span class="btn-text">Guardar Proyección</span>
+                <span class="btn-loader" style="display:none"><span class="spinner"></span>
+                  Guardando...</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="proy-admin-view" style="display:none">
+            <div class="proy-admin-download-bar">
+              <button class="btn-export proy-download-btn" onclick="proy_descargarExcel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                Descargar Excel
+              </button>
+            </div>
+            <div id="proy-admin-tabla"></div>
+          </div>
+
+        </div>
+      </div>
+    </main>
   </section>
 
   <div id="wa-modal-overlay" class="modal-overlay" style="display:none" onclick="closeWaModal(event)">
@@ -680,7 +987,12 @@
       <div class="modal-header wa-modal-header">
         <div class="modal-header-left">
           <div class="modal-icon wa-modal-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              <path
+                d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z" />
+            </svg>
           </div>
           <div>
             <h3>Enviar mensaje de WhatsApp</h3>
@@ -688,7 +1000,10 @@
           </div>
         </div>
         <button class="modal-close" onclick="closeWaModal()" aria-label="Cerrar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -698,7 +1013,10 @@
           <div class="wa-preview-header">
             <p class="wa-preview-label-big">Vista previa del mensaje</p>
             <button class="wa-btn-editar" onclick="abrirModoEdicion()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
               Editar mensaje
             </button>
           </div>
@@ -709,30 +1027,50 @@
           <div class="wa-chips-label">Insertar dato del lead en el mensaje:</div>
           <div class="wa-chips">
             <button type="button" class="wa-chip" onclick="insertarVariable('{nombre}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
               Nombre y Apellido
             </button>
             <button type="button" class="wa-chip" onclick="insertarVariable('{producto}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
               Producto de Interés
             </button>
             <button type="button" class="wa-chip" onclick="insertarVariable('{detalle_producto}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
               Datos del Producto
             </button>
           </div>
           <div class="field-group">
             <label class="field-label">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
               Mensaje personalizado
             </label>
             <textarea id="wa-mensaje" rows="7" class="wa-textarea" placeholder="Escribe tu mensaje aquí..."></textarea>
-            <p class="wa-hint">💡 Usa <code>{nombre}</code>, <code>{producto}</code> y <code>{detalle_producto}</code> — se reemplazarán con los datos del lead al enviar.</p>
+            <p class="wa-hint">💡 Usa <code>{nombre}</code>, <code>{producto}</code> y
+              <code>{detalle_producto}</code> — se reemplazarán con los datos del lead al enviar.
+            </p>
           </div>
           <div class="wa-edit-actions">
             <button class="btn-cancel" onclick="cancelarEdicion()">Cancelar</button>
             <button class="wa-btn-guardar" id="wa-btn-guardar" onclick="guardarMensajeWa()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
               <span class="btn-text">Guardar mensaje</span>
               <span class="btn-loader" style="display:none"><span class="spinner"></span></span>
             </button>
@@ -743,7 +1081,12 @@
 
       <div class="modal-footer wa-modal-footer-simple">
         <button class="wa-btn-enviar" onclick="enviarWhatsapp()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+              d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z" />
+          </svg>
           Enviar WhatsApp
         </button>
       </div>
@@ -757,7 +1100,12 @@
       <div class="modal-header export-modal-header">
         <div class="modal-header-left">
           <div class="modal-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
           </div>
           <div>
             <h3>Exportar a Excel</h3>
@@ -765,7 +1113,10 @@
           </div>
         </div>
         <button class="modal-close" onclick="closeExportModal()" aria-label="Cerrar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -773,31 +1124,55 @@
 
         <p class="export-section-label">Período de exportación</p>
         <div class="export-period-grid">
-          <button class="export-period-btn active" id="ep-todos"  onclick="selectExportPeriod('todos', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M3 15h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          <button class="export-period-btn active" id="ep-todos" onclick="selectExportPeriod('todos', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9h18M3 15h18" />
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
             Todos los leads
           </button>
-          <button class="export-period-btn" id="ep-hoy"   onclick="selectExportPeriod('hoy', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <button class="export-period-btn" id="ep-hoy" onclick="selectExportPeriod('hoy', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
             Hoy
           </button>
           <button class="export-period-btn" id="ep-semana" onclick="selectExportPeriod('semana', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
             Esta semana
           </button>
-          <button class="export-period-btn" id="ep-mes"   onclick="selectExportPeriod('mes', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="14" width="3" height="3"/></svg>
+          <button class="export-period-btn" id="ep-mes" onclick="selectExportPeriod('mes', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <rect x="7" y="14" width="3" height="3" />
+            </svg>
             Este mes
           </button>
           <button class="export-period-btn" id="ep-rango" onclick="selectExportPeriod('rango', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
             Rango personalizado
           </button>
         </div>
 
         <div id="export-rango-wrap" style="display:none" class="export-rango">
           <div class="date-filter-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
             <input type="date" id="exp-desde" onchange="actualizarPreview()">
             <span class="date-sep">→</span>
             <input type="date" id="exp-hasta" onchange="actualizarPreview()">
@@ -817,17 +1192,25 @@
 
         <p class="export-section-label" style="margin-top:1rem">Nombre del archivo</p>
         <div class="input-wrap" style="margin-bottom:0">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
           <input type="text" id="export-filename" placeholder="Mis_Leads" style="padding-left:44px">
         </div>
-        <span style="font-size:0.75rem;color:var(--slate-400);margin-top:4px;display:block">Se descargará como <strong id="filename-preview">Mis_Leads.xlsx</strong></span>
+        <span style="font-size:0.75rem;color:var(--slate-400);margin-top:4px;display:block">Se descargará como
+          <strong id="filename-preview">Mis_Leads.xlsx</strong></span>
 
       </div>
 
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeExportModal()">Cancelar</button>
         <button class="btn-primary btn-save" id="btn-do-export" onclick="ejecutarExportacion()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
           Descargar Excel
         </button>
       </div>
@@ -841,7 +1224,10 @@
       <div class="modal-header">
         <div class="modal-header-left">
           <div class="modal-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
           </div>
           <div>
             <h3 id="modal-title">Editar Lead</h3>
@@ -849,7 +1235,10 @@
           </div>
         </div>
         <button class="modal-close" onclick="closeEditModal()" aria-label="Cerrar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -859,7 +1248,10 @@
         <div class="form-grid">
           <div class="field-group full-width">
             <label for="edit-nombre">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
               Nombre y Apellido
             </label>
             <input type="text" id="edit-nombre" placeholder="Nombre completo del cliente">
@@ -868,7 +1260,10 @@
 
           <div class="field-group">
             <label for="edit-telefono">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.07-1.07a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.07-1.07a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
               Número de Teléfono
             </label>
             <input type="tel" id="edit-telefono" placeholder="Ej: 987654321" maxlength="9" inputmode="numeric">
@@ -877,7 +1272,12 @@
 
           <div class="field-group">
             <label for="edit-edad">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
               Edad
             </label>
             <input type="tel" id="edit-edad" placeholder="Ej: 45" maxlength="3" inputmode="numeric">
@@ -886,7 +1286,10 @@
 
           <div class="field-group full-width">
             <label for="edit-producto">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
               Producto de Interés
             </label>
             <div class="select-wrap">
@@ -898,14 +1301,18 @@
                 <option value="Onco Pro">🟠 Onco Pro</option>
                 <option value="Onco Plus">🔴 Onco Plus</option>
               </select>
-              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
             <span class="field-error" id="edit-err-producto"></span>
           </div>
 
           <div class="field-group full-width">
             <label for="edit-temperatura">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+              </svg>
               Temperatura del Lead
             </label>
             <div class="select-wrap">
@@ -915,14 +1322,19 @@
                 <option value="Tibio">🟡 Tibio</option>
                 <option value="Caliente">🟢 Caliente</option>
               </select>
-              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
             <span class="field-error" id="edit-err-temperatura"></span>
           </div>
 
           <div class="field-group full-width">
             <label for="edit-referencia">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
               Referencia de Ubicación <span class="optional-tag">Opcional</span>
             </label>
             <input type="text" id="edit-referencia" placeholder="Ej: Parque central, frente al banco...">
@@ -930,7 +1342,9 @@
 
           <div class="field-group full-width">
             <label for="edit-comentarios">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
               Comentarios <span class="optional-tag">Opcional</span>
             </label>
             <textarea id="edit-comentarios" rows="3" placeholder="Observaciones adicionales..."></textarea>
@@ -941,7 +1355,11 @@
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
         <button class="btn-primary btn-save" id="btn-save-edit" onclick="guardarEdicion()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
           <span class="btn-text">Guardar Cambios</span>
           <span class="btn-loader" style="display:none"><span class="spinner"></span> Guardando...</span>
         </button>
@@ -951,12 +1369,147 @@
   </div>
 
   <div id="toast-edit" class="toast toast-edit" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
     ¡Lead actualizado con éxito!
   </div>
 
-  <script src="script.js"></script>
+  <!-- Modal Gestión de Equipo (UX Refined) -->
+  <div class="modal-overlay" id="team-modal-overlay" onclick="closeTeamModal(event)" style="display: none;">
+    <div class="modal-content team-modal">
+      <div class="team-modal-header">
+        <div class="team-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <div class="team-header-text">
+          <h3>Gestión de Equipo</h3>
+          <p id="team-subtitle">Administra los accesos de tu grupo</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeTeamModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="team-tabs">
+        <button onclick="switchTeamTab('crear')" id="tab-team-crear" class="team-tab active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+          Crear Asesor
+        </button>
+        <button onclick="switchTeamTab('eliminar')" id="tab-team-eliminar" class="team-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6h14zM8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          </svg>
+          Eliminar Asesor
+        </button>
+      </div>
+
+      <div class="team-sections-container">
+        <div id="team-crear-section" class="team-section-content active">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem;">
+            <div class="team-input-group">
+              <label class="team-input-label">Nombre</label>
+              <div class="team-input-wrapper">
+                <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <input type="text" id="new-user-nombre" placeholder="Ej: Juan" autocomplete="off">
+              </div>
+            </div>
+            <div class="team-input-group">
+              <label class="team-input-label">Apellido</label>
+              <div class="team-input-wrapper">
+                <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <input type="text" id="new-user-apellido" placeholder="Ej: Perez" autocomplete="off">
+              </div>
+            </div>
+          </div>
+
+          <div class="team-input-group">
+            <label class="team-input-label">Correo Electrónico (Real)</label>
+            <div class="team-input-wrapper">
+              <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <input type="email" id="new-user-email" placeholder="juan.perez@gmail.com" autocomplete="off">
+            </div>
+            <span class="team-input-hint">Se usará para recuperación de clave</span>
+          </div>
+
+          <div class="team-access-preview">
+            <div class="preview-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4" />
+                <path d="M12 8h.01" />
+              </svg>
+              <span>Vista previa de acceso</span>
+            </div>
+            <div class="preview-details">
+              <div class="preview-item">
+                <label>Usuario:</label>
+                <span id="preview-user">...</span>
+              </div>
+              <div class="preview-item">
+                <label>Clave temporal:</label>
+                <span id="preview-pass">...</span>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="ejecutarCrearAsesor()" id="btn-crear-asesor" class="team-submit-btn">
+            <span class="btn-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                style="width: 18px; height: 18px;">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Crear Acceso Oficial
+            </span>
+            <div class="btn-loader" style="display: none;">
+              <div class="spinner-mini"></div>
+              Procesando...
+            </div>
+          </button>
+        </div>
+
+        <div id="team-eliminar-section" class="team-section-content" style="display: none;">
+          <div class="team-list-header">
+            <p>Lista de miembros del equipo</p>
+          </div>
+          <div id="team-members-list" class="team-members-scroll">
+            <!-- Se llena vía JS -->
+          </div>
+        </div>
+      </div>
+
+      <div id="team-msg-container" class="team-message-bar" style="display: none;">
+        <div id="team-msg-icon"></div>
+        <p id="team-msg"></p>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="script.js?v=2.5"></script>
 </body>
+
 </html>
-
-
