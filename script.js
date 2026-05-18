@@ -6,13 +6,23 @@
 const SUPABASE_URL = 'https://yemdfadeczjrvxptyerl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbWRmYWRlY3pqcnZ4cHR5ZXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NzU1OTMsImV4cCI6MjA4NzQ1MTU5M30.MrWtFAhekPyuEUs0zgT3VSqYgPwd9o25lMdCuhxqwg4';
 
-let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── Variables Globales ───
 let allLeads = [];
 let currentPage = 1;
 const PAGE_SIZE = 20;
 let realtimeChannel = null;
+
+// ─── Variables de Calidad ───
+let allCalidad = [];
+let calidadFiltroStatus = 'Todos';
+let calidadFiltroAsesor = '';
+let calidadEditandoId = null;
+
+// ─── Variables de Paginación ───
+let carteraPaginaActual = 1;
+let calidadPaginaActual = 1;
 
 // ─── Variables de Seguridad (Watchdog) ───
 let temporizadorInactividad;
@@ -24,8 +34,12 @@ const TIEMPO_INACTIVIDAD_MS = 60 * 60 * 1000; // 60 Minutos
 const SESSION_KEY = "auna_perfil"; // Ahora solo es una caché visual temporal
 
 function guardarSesion(usuario, rol, agente, equipo) {
-    const sesion = { usuario, rol, agente, equipo };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
+    try {
+        const sesion = { usuario, rol, agente, equipo };
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
+    } catch (e) {
+        console.warn("No se pudo guardar la sesión", e);
+    }
 }
 
 function leerSesion() {
@@ -38,7 +52,11 @@ function leerSesion() {
 }
 
 function borrarSesionCache() {
-    sessionStorage.removeItem(SESSION_KEY);
+    try {
+        sessionStorage.removeItem(SESSION_KEY);
+    } catch (e) {
+        console.warn("No se pudo borrar la sesión", e);
+    }
 }
 
 // 1. Escuchador Global de Estado (Motor de Supabase)
@@ -95,6 +113,8 @@ async function cerrarSesionPorInactividad() {
     console.log("Sesión expirada por inactividad.");
     alert("Tu sesión ha expirado por inactividad. Vuelve a iniciar sesión para continuar.");
     await logout();
+    // Capa 4: Hard reload para limpiar procesos colgados del celular
+    window.location.reload();
 }
 
 // 3. Detectar si el asesor está trabajando
@@ -183,6 +203,32 @@ function iniciarSuscripcionTiempoReal() {
                 }
             }
         )
+        // 3. Escuchar CARTERA
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'cartera' },
+            (payload) => {
+                const usuarioModificado = payload.new?.usuario || payload.old?.usuario;
+                if (miRol === "Administrador" && usuarioModificado && usuarioModificado !== miUsuario) {
+                    cartera_recargarSilencioso();
+                } else if (usuarioModificado === miUsuario) {
+                    cartera_recargarSilencioso();
+                }
+            }
+        )
+        // 4. Escuchar CALIDAD
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'calidad' },
+            (payload) => {
+                const usuarioModificado = payload.new?.usuario || payload.old?.usuario;
+                if (miRol === "Administrador" && usuarioModificado && usuarioModificado !== miUsuario) {
+                    cal_recargarSilencioso();
+                } else if (usuarioModificado === miUsuario) {
+                    cal_recargarSilencioso();
+                }
+            }
+        )
         .subscribe();
 }
 
@@ -261,82 +307,88 @@ function togglePass() {
 /* ══════════════════════════════════════════════
    LOGIN (Supabase)
 ══════════════════════════════════════════════ */
-let isLoggingIn = false; 
+let isLoggingIn = false;
 
 async function login() {
-    if (isLoggingIn) return; 
-    
+    // Capa 1: Mutex (Candado Anti-Spam de clics)
+    if (isLoggingIn) return;
+
     const userIn = document.getElementById("username").value.trim().toLowerCase();
     const passIn = document.getElementById("password").value;
-
-    document.getElementById("login-error").style.display = "none";
 
     if (!userIn || !passIn) {
         showLoginError("Ingresa usuario y contraseña");
         return;
     }
 
-    isLoggingIn = true; 
+    isLoggingIn = true;
     setLoginLoading(true);
+    document.getElementById("login-error").style.display = "none";
+
+    // Capa 3: Exorcismo de Sesión Zombie (Limpieza profunda)
+    try {
+        await supabaseClient.auth.signOut().catch(() => { });
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('sb-')) localStorage.removeItem(key);
+        });
+    } catch (e) {
+        console.warn("No se pudo limpiar la caché local (SecurityError o similar)", e);
+    }
 
     try {
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error("TIMEOUT")), 12000)
-        );
+        // Capa 2: Freno de Emergencia (Timeout de 8 segundos)
+        const loginPromise = (async () => {
+            // 1. Buscamos el email real en la base de datos
+            const { data: emailLogin } = await supabaseClient.rpc('obtener_email_de_usuario', { p_username: userIn });
 
-        const loginTask = async () => {
-            // 1. Limpieza Nuclear de caché (Borra tokens muertos)
-            Object.keys(localStorage).forEach(key => {
-                if (key.startsWith('sb-') && key.includes('-auth-token')) {
-                    localStorage.removeItem(key);
-                }
-            });
+            // Validamos que el email exista antes de intentar el login
+            if (!emailLogin) {
+                return { success: false, msg: "El usuario no tiene un correo asociado o no existe." };
+            }
 
-            // 2. RESURRECCIÓN DEL CLIENTE (Soluciona el congelamiento móvil)
-            // Sobrescribimos la variable global para que toda la app use esta conexión fresca
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-            // 3. Buscar correo real usando el cliente fresco
-            const { data: emailReal, error: rpcError } = await supabaseClient.rpc('obtener_email_de_usuario', { p_username: userIn });
-            if (rpcError) throw new Error("ERROR_RED"); 
-
-            const emailLogin = emailReal || (userIn + "@auna.pe");
-
-            // 4. Autenticar desde cero
+            // 2. Intento de login solo con el email obtenido de la base de datos
             const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
                 email: emailLogin,
                 password: passIn
             });
 
-            if (authError || !authData.user) throw new Error("CREDENCIALES_INVALIDAS");
+            if (authError || !authData.user) {
+                return { success: false, msg: "Usuario o contraseña incorrectos." };
+            }
 
-            // 5. Buscar perfil
-            const { data: usuario, error: userError } = await supabaseClient
+            // 3. Obtener datos complementarios del perfil
+            const { data: usuario } = await supabaseClient
                 .from('usuarios')
                 .select('*')
                 .eq('id', authData.user.id)
                 .single();
 
-            if (userError || !usuario) throw new Error("SIN_PERFIL");
-            
-            return usuario;
-        };
+            if (usuario) {
+                guardarSesion(usuario.usuario, usuario.rol, usuario.agente, usuario.equipo);
+                mostrarPantallaFormulario(usuario);
+                return { success: true };
+            } else {
+                return { success: false, msg: "No se pudo cargar tu perfil." };
+            }
+        })();
 
-        const usuario = await Promise.race([loginTask(), timeoutPromise]);
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('TIMEOUT_EMERGENCIA')), 8000)
+        );
 
-        // Éxito
-        guardarSesion(usuario.usuario, usuario.rol, usuario.agente, usuario.equipo);
-        mostrarPantallaFormulario(usuario);
+        const result = await Promise.race([loginPromise, timeoutPromise]);
+
+        if (result && !result.success) {
+            showLoginError(result.msg);
+        }
 
     } catch (error) {
-        if (error.message === "TIMEOUT" || error.message === "ERROR_RED") {
-            showLoginError("Error de conexión. El servidor no responde.");
-        } else if (error.message === "CREDENCIALES_INVALIDAS") {
-            showLoginError("Usuario o contraseña incorrectos.");
-        } else if (error.message === "SIN_PERFIL") {
-            showLoginError("No se pudo cargar tu perfil.");
+        if (error.message === 'TIMEOUT_EMERGENCIA') {
+            showLoginError("La red es inestable. Abortando conexión para proteger la app...");
+            // Si hubo timeout, es posible que la red del móvil esté corrupta, forzamos recarga
+            setTimeout(() => window.location.reload(), 2500);
         } else {
-            showLoginError("Ocurrió un error inesperado al conectar.");
+            showLoginError("Error al conectar. Verifica tu conexión.");
         }
     } finally {
         isLoggingIn = false;
@@ -394,6 +446,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+function formatDecimalInput(input) {
+    let val = input.value.replace(/,/g, '.'); // Replace comma with dot
+    val = val.replace(/[^0-9.]/g, ''); // Remove non-numeric/dot characters
+
+    // Ensure only one dot
+    const parts = val.split('.');
+    if (parts.length > 2) {
+        val = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Max 2 decimals
+    if (val.includes('.')) {
+        const dec = val.split('.')[1];
+        if (dec.length > 2) {
+            val = val.substring(0, val.indexOf('.') + 3);
+        }
+    }
+
+    input.value = val;
+}
 
 
 /* ══════════════════════════════════════════════
@@ -413,7 +485,7 @@ function mostrarPantallaFormulario(user) {
     document.getElementById("user-avatar").textContent = nombre.charAt(0).toUpperCase();
 
     // Formulario: Saludo más humano y pequeño
-    document.getElementById("form-title").textContent = `Hola, ${nombre}👋🏼`;
+    document.getElementById("form-title").textContent = `Hola, ${nombre}👋🏼. Registra tu Lead`;
 
     iniciarSuscripcionTiempoReal();
 }
@@ -437,6 +509,23 @@ async function logout() {
     cot_currentInt = 1;
     cot_modoActuarial = false;
     proy_filasCount = 0;
+
+    // Cartera resets
+    allCartera = [];
+    carteraFiltroEstado = 'todos';
+    carteraFiltroPlan = 'todos';
+    carteraFiltroAsesor = 'todos';
+    carteraEditandoId = null;
+
+    // Calidad resets
+    allCalidad = [];
+    calidadFiltroStatus = 'Todos';
+    calidadFiltroAsesor = '';
+    calidadEditandoId = null;
+
+    // Pagination resets
+    carteraPaginaActual = 1;
+    calidadPaginaActual = 1;
 
     const tablaEl = document.getElementById("tabla-registros");
     if (tablaEl) tablaEl.innerHTML = `
@@ -488,6 +577,8 @@ function switchTab(tab) {
     if (tab === "encuesta") iniciarEncuesta();
     if (tab === "cotizador") { cot_init(); requestAnimationFrame(() => requestAnimationFrame(cot_ajustarEscala)); }
     if (tab === "proyeccion") proy_init();
+    if (tab === "cartera") cartera_init();
+    if (tab === "calidad") cal_init();
 
     const labels = {
         form: { label: "Nuevo Lead", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>` },
@@ -495,6 +586,8 @@ function switchTab(tab) {
         encuesta: { label: "Encuesta", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>` },
         cotizador: { label: "Cotizador", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>` },
         proyeccion: { label: "Proyección", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>` },
+        cartera: { label: "Cartera", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` },
+        calidad: { label: "Calidad", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>` }
     };
     const info = labels[tab];
     if (info) {
@@ -2931,5 +3024,1027 @@ async function ejecutarEliminarAsesor(nombreAsesor) {
         cargarListaEquipo();
     } catch (err) {
         showTeamMessage(`No se pudo eliminar: ${err.message}`, "error");
+    }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   CARTERA DE CLIENTES
+═════════════════════════════════════════════════════════════════════════════ */
+let allCartera = [];
+let carteraFiltroEstado = 'todos';
+let carteraFiltroPlan = 'todos';
+let carteraFiltroAsesor = 'todos';
+let carteraEditandoId = null;
+
+async function cartera_init() {
+    if (allCartera.length === 0) {
+        await cartera_cargar();
+    } else {
+        cartera_aplicarFiltros();
+    }
+}
+
+async function cartera_cargar() {
+    const container = document.getElementById("cartera-tabla-container");
+    container.innerHTML = `
+        <div class="empty-state cartera-empty-state">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <p>Cargando cartera...</p>
+        </div>`;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('cartera')
+            .select('*')
+            .order('fecha_afiliacion', { ascending: false });
+
+        if (error) throw error;
+        allCartera = data || [];
+
+        document.getElementById("cartera-sub-count").textContent = `${allCartera.length} cliente${allCartera.length !== 1 ? 's' : ''}`;
+
+        const rol = leerSesion()?.rol;
+        if (rol === "Administrador") {
+            document.getElementById("wrap-cartera-filtro-asesor").style.display = "flex";
+            cartera_poblarSelectAsesores();
+        }
+
+        cartera_aplicarFiltros();
+    } catch (e) {
+        console.error("Error loading cartera:", e);
+        container.innerHTML = `<p style="color:red;text-align:center;padding:20px;">Error al cargar datos.</p>`;
+    }
+}
+
+function cartera_poblarSelectAsesores() {
+    const sel = document.getElementById("cartera-filtro-asesor");
+    const usuarios = [...new Set(allCartera.map(c => c.usuario).filter(Boolean))].sort();
+
+    let html = `<option value="todos">Todos los asesores</option>`;
+    usuarios.forEach(u => {
+        html += `<option value="${u}">${u}</option>`;
+    });
+    sel.innerHTML = html;
+
+    if (usuarios.includes(carteraFiltroAsesor)) {
+        sel.value = carteraFiltroAsesor;
+    } else {
+        carteraFiltroAsesor = 'todos';
+    }
+}
+
+function cartera_setFiltroEstado(estado) {
+    document.querySelectorAll(".qf-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById(`cartera-qf-${estado}`).classList.add("active");
+    carteraFiltroEstado = estado;
+    cartera_aplicarFiltros(true);
+}
+
+function cartera_aplicarFiltros(resetPage = true) {
+    if (resetPage) {
+        carteraPaginaActual = 1;
+    }
+    const q = document.getElementById("cartera-search").value.toLowerCase();
+    const plan = document.getElementById("cartera-filtro-plan").value;
+    const asesor = document.getElementById("cartera-filtro-asesor")?.value || 'todos';
+    carteraFiltroAsesor = asesor;
+
+    const isMobile = window.innerWidth <= 640;
+
+    let filtered = allCartera.filter(c => {
+        const txt = `${c.contratante} ${c.dni} ${c.celular}`.toLowerCase();
+        if (q && !txt.includes(q)) return false;
+        if (plan !== 'todos' && c.plan_salud !== plan) return false;
+        if (asesor !== 'todos' && c.usuario !== asesor) return false;
+
+        if (carteraFiltroEstado === 'aldia') return !tieneMoroso(c);
+        if (carteraFiltroEstado === 'morosos') return tieneMoroso(c);
+        if (carteraFiltroEstado === 'desafiliados') return tieneDesafiliado(c);
+        return true;
+    });
+
+    cartera_renderTabla(filtered, isMobile);
+}
+
+function tieneMoroso(c) {
+    for (let i = 1; i <= 12; i++) if (c[`m${i}`] === 'Moroso') return true;
+    return false;
+}
+function tieneDesafiliado(c) {
+    for (let i = 1; i <= 12; i++) if (c[`m${i}`] === 'Desafiliado') return true;
+    return false;
+}
+
+function cartera_renderTabla(data, isMobile) {
+    const container = document.getElementById("cartera-tabla-container");
+    if (data.length === 0) {
+        container.innerHTML = `<div class="empty-state cartera-empty-state"><p>No se encontraron clientes.</p></div>`;
+        return;
+    }
+
+    const totalItems = data.length;
+    const totalPaginas = Math.ceil(totalItems / 15);
+
+    if (carteraPaginaActual > totalPaginas) carteraPaginaActual = totalPaginas;
+    if (carteraPaginaActual < 1) carteraPaginaActual = 1;
+
+    const dataPaginada = data.slice((carteraPaginaActual - 1) * 15, carteraPaginaActual * 15);
+
+    const miUsuario = leerSesion()?.usuario;
+    const rol = leerSesion()?.rol;
+
+    if (isMobile) {
+        let html = ``;
+        dataPaginada.forEach(c => {
+            const hasMoroso = tieneMoroso(c);
+            const esMiRegistro = c.usuario === miUsuario;
+            const cuotaActiva = cartera_obtenerCuotaActiva(c.fecha_afiliacion);
+
+            let chipsHtml = ``;
+            for (let i = 1; i <= 12; i++) {
+                const esActiva = (i === cuotaActiva);
+                chipsHtml += cartera_estadoChipHtml(`M${i}`, c[`m${i}`] || 'Pendiente', esActiva);
+            }
+
+            html += `
+            <div class="cartera-row-card ${hasMoroso ? 'has-moroso' : ''}" ${esMiRegistro ? `onclick="cartera_abrirModal('${c.id}')" style="cursor:pointer;" title="Click para editar"` : ''}>
+                <div class="cartera-card-header">
+                    <div>
+                        <h4 class="cartera-card-title">${c.contratante}</h4>
+                        <span class="cartera-card-plan">${c.plan_salud}</span>
+                        ${rol === 'Administrador' ? `<span style="font-size:0.7rem; color:var(--slate-500); display:block; margin-top:2px;">Asesor: ${c.usuario}</span>` : ''}
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-whatsapp" onclick="event.stopPropagation(); cartera_abrirWhatsApp('${c.celular}')">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div style="font-size:0.8rem; color:var(--slate-600); margin-bottom:8px;">
+                    Fecha: ${c.fecha_afiliacion} | DNI: ${c.dni} | Cel: ${c.celular} <br>
+                    Mensualidad: <span class="cartera-card-monto">S/ ${c.mensualidad}</span> | Bono: <span class="cartera-card-monto">S/ ${c.bono || '0.00'}</span>
+                </div>
+                <div class="cartera-meses-scroll">
+                    ${chipsHtml}
+                </div>
+            </div>`;
+        });
+        container.innerHTML = `<div style="padding:1rem;">${html}</div>`;
+    } else {
+        let theadHtml = `
+            <tr>
+                <th class="cartera-th">Fecha de afiliación</th>
+                <th class="cartera-th">Contratante</th>
+                <th class="cartera-th">DNI</th>
+                <th class="cartera-th">Celular</th>
+                ${rol === 'Administrador' ? '<th class="cartera-th">Asesor</th>' : ''}
+                <th class="cartera-th">Plan</th>
+                <th class="cartera-th">Mensualidad</th>
+                <th class="cartera-th">Bono</th>
+                <th class="cartera-th">Seguimiento de Pagos (M1-M12)</th>
+            </tr>`;
+
+        let tbodyHtml = ``;
+        dataPaginada.forEach(c => {
+            const esMiRegistro = c.usuario === miUsuario;
+            const cuotaActiva = cartera_obtenerCuotaActiva(c.fecha_afiliacion);
+            let chipsHtml = `<div class="meses-grid-table">`;
+            for (let i = 1; i <= 12; i++) {
+                const esActiva = (i === cuotaActiva);
+                chipsHtml += cartera_estadoChipHtml(`M${i}`, c[`m${i}`] || 'Pendiente', esActiva);
+            }
+            chipsHtml += `</div>`;
+
+            tbodyHtml += `
+            <tr class="cartera-tr" ${esMiRegistro ? `onclick="cartera_abrirModal('${c.id}')" style="cursor:pointer;" title="Click para editar"` : ''}>
+                <td class="cartera-td" style="white-space:nowrap;">${c.fecha_afiliacion}</td>
+                <td class="cartera-td cartera-td-nombre">${c.contratante}</td>
+                <td class="cartera-td">${c.dni}</td>
+                <td class="cartera-td">
+                    ${c.celular}
+                    <button class="btn-whatsapp" onclick="event.stopPropagation(); cartera_abrirWhatsApp('${c.celular}')" title="Enviar WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.253 2 2 6.253 2 11.5c0 1.87.518 3.618 1.414 5.106L2 22l5.565-1.396A9.455 9.455 0 0 0 11.5 21C16.747 21 21 16.747 21 11.5S16.747 2 11.5 2zm0 17.25a7.725 7.725 0 0 1-3.947-1.082l-.283-.168-2.933.735.784-2.862-.184-.293A7.713 7.713 0 0 1 3.75 11.5C3.75 7.22 7.22 3.75 11.5 3.75S19.25 7.22 19.25 11.5 15.78 19.25 11.5 19.25z"/></svg>
+                    </button>
+                </td>
+                ${rol === 'Administrador' ? `<td class="cartera-td">${c.usuario}</td>` : ''}
+                <td class="cartera-td"><span class="cartera-td-plan">${c.plan_salud}</span></td>
+                <td class="cartera-td cartera-td-mensualidad">S/ ${c.mensualidad}</td>
+                <td class="cartera-td">S/ ${c.bono || '0.00'}</td>
+                <td class="cartera-td" style="padding: 1rem 4px;">${chipsHtml}</td>
+            </tr>`;
+        });
+
+        container.innerHTML = `
+            <div class="cartera-table-wrap">
+                <table class="cartera-table">
+                    <thead>${theadHtml}</thead>
+                    <tbody>${tbodyHtml}</tbody>
+                </table>
+            </div>`;
+    }
+
+    if (totalItems > 15) {
+        let pagHtml = `<div class="pagination-container">`;
+        for (let p = 1; p <= totalPaginas; p++) {
+            pagHtml += `<button class="pagination-btn ${p === carteraPaginaActual ? 'active' : ''}" onclick="cartera_cambiarPagina(${p})">${p}</button>`;
+        }
+        pagHtml += `</div>`;
+        container.insertAdjacentHTML('beforeend', pagHtml);
+    }
+}
+
+function cartera_cambiarPagina(p) {
+    carteraPaginaActual = p;
+    cartera_aplicarFiltros(false);
+}
+
+function cartera_obtenerCuotaActiva(fechaAfiliacion) {
+    if (!fechaAfiliacion) return 0;
+    const parts = fechaAfiliacion.split('-');
+    if (parts.length !== 3) return 0;
+    const aYear = parseInt(parts[0], 10);
+    const aMonth = parseInt(parts[1], 10) - 1;
+    const aDay = parseInt(parts[2], 10);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 1; i <= 12; i++) {
+        let startDate;
+        if (i === 1) {
+            startDate = new Date(aYear, aMonth, aDay + 1);
+        } else {
+            startDate = new Date(aYear, aMonth + i - 1, aDay + 1);
+        }
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date(aYear, aMonth + i, aDay);
+        endDate.setHours(0, 0, 0, 0);
+
+        if (today >= startDate && today <= endDate) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+function cartera_estadoChipHtml(label, estado, esActiva = false) {
+    let cssClass = 'pendiente';
+    if (estado === 'Pagado') cssClass = 'pagado';
+    else if (estado === 'Moroso') cssClass = 'moroso';
+    else if (estado === 'Desafiliado') cssClass = 'desafiliado';
+
+    const activeClass = esActiva ? 'cuota-activa' : '';
+    return `<span class="mes-chip ${cssClass} ${activeClass}" title="${label}: ${estado}">${estado.charAt(0)}</span>`;
+}
+
+function cartera_abrirModal(id = null) {
+    carteraEditandoId = id;
+    const form = document.getElementById("cartera-form");
+    form.reset();
+
+    document.getElementById("cartera-modal-title").textContent = id ? "Editar Cliente" : "Nuevo Cliente";
+
+    let mesesHtml = ``;
+    for (let i = 1; i <= 12; i++) {
+        mesesHtml += `
+        <div class="mes-select-group">
+            <label>M${i} <span id="chip-prev-m${i}" class="mes-chip pendiente" style="font-size:0.6rem; padding:2px 4px; min-width:auto;">Pendiente</span></label>
+            <select id="cartera-m${i}" onchange="cartera_actualizarChipSelect(${i}, this.value)">
+                <option value="Pagado">Pagado</option>
+                <option value="Pendiente" selected>Pendiente</option>
+                <option value="Moroso">Moroso</option>
+                <option value="Desafiliado">Desafiliado</option>
+            </select>
+        </div>`;
+    }
+    document.getElementById("cartera-meses-container").innerHTML = mesesHtml;
+
+    const delWrap = document.getElementById("cartera-btn-eliminar-wrap");
+    delWrap.innerHTML = "";
+
+    if (id) {
+        const c = allCartera.find(x => x.id === id);
+        if (c) {
+            document.getElementById("cartera-fecha").value = c.fecha_afiliacion;
+            document.getElementById("cartera-grupo").value = c.grupo_familiar;
+            document.getElementById("cartera-dni").value = c.dni;
+            document.getElementById("cartera-celular").value = c.celular || '';
+            document.getElementById("cartera-contratante").value = c.contratante;
+            document.getElementById("cartera-plan").value = c.plan_salud;
+            document.getElementById("cartera-afiliados").value = c.afiliados;
+            document.getElementById("cartera-mensualidad").value = c.mensualidad;
+            document.getElementById("cartera-bono").value = c.bono || '';
+            document.getElementById("cartera-calidad").value = c.calidad;
+
+            for (let i = 1; i <= 12; i++) {
+                const val = c[`m${i}`] || 'Pendiente';
+                document.getElementById(`cartera-m${i}`).value = val;
+                cartera_actualizarChipSelect(i, val);
+            }
+
+            delWrap.innerHTML = `<button type="button" class="btn-cancel" style="background:#fee2e2; color:#dc2626; border-color:#fecaca;" onclick="cartera_eliminar('${id}')">Eliminar</button>`;
+        }
+    }
+
+    const overlay = document.getElementById("cartera-modal-overlay");
+    overlay.style.display = "flex";
+    // Force reflow for transition
+    overlay.offsetHeight;
+    overlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function cartera_cerrarModal(event = null) {
+    if (event && event.target !== event.currentTarget) return;
+    const overlay = document.getElementById("cartera-modal-overlay");
+    overlay.classList.remove("active");
+    document.body.style.overflow = "";
+    setTimeout(() => { overlay.style.display = "none"; }, 250);
+}
+
+function cartera_actualizarChipSelect(m, val) {
+    const chip = document.getElementById(`chip-prev-m${m}`);
+    if (chip) {
+        chip.textContent = val;
+        chip.className = 'mes-chip';
+        if (val === 'Pagado') chip.classList.add('pagado');
+        else if (val === 'Moroso') chip.classList.add('moroso');
+        else if (val === 'Desafiliado') chip.classList.add('desafiliado');
+        else chip.classList.add('pendiente');
+    }
+
+    // Si se selecciona "Desafiliado", todas las cuotas posteriores se marcan automáticamente como "Desafiliado"
+    if (val === 'Desafiliado') {
+        for (let i = m + 1; i <= 12; i++) {
+            const nextSelect = document.getElementById(`cartera-m${i}`);
+            if (nextSelect && nextSelect.value !== 'Desafiliado') {
+                nextSelect.value = 'Desafiliado';
+                cartera_actualizarChipSelect(i, 'Desafiliado');
+            }
+        }
+    }
+}
+
+async function cartera_guardar() {
+    const form = document.getElementById("cartera-form");
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const btn = document.getElementById("btn-guardar-cartera");
+    btn.disabled = true;
+    btn.querySelector(".btn-loader").style.display = "inline-flex";
+    btn.querySelector(".btn-text").style.display = "none";
+
+    try {
+        const meses = [];
+        for (let i = 1; i <= 12; i++) {
+            meses.push(document.getElementById(`cartera-m${i}`).value);
+        }
+
+        // Si alguna cuota está como "Desafiliado", todas las cuotas siguientes también se marcan como "Desafiliado"
+        const indexDesafiliado = meses.indexOf("Desafiliado");
+        if (indexDesafiliado !== -1) {
+            for (let i = indexDesafiliado + 1; i < 12; i++) {
+                meses[i] = "Desafiliado";
+            }
+        }
+
+        const datos = {
+            fecha_afiliacion: document.getElementById("cartera-fecha").value,
+            grupo_familiar: document.getElementById("cartera-grupo").value,
+            dni: document.getElementById("cartera-dni").value,
+            celular: document.getElementById("cartera-celular").value,
+            contratante: document.getElementById("cartera-contratante").value,
+            plan_salud: document.getElementById("cartera-plan").value,
+            afiliados: parseInt(document.getElementById("cartera-afiliados").value),
+            mensualidad: parseFloat(document.getElementById("cartera-mensualidad").value),
+            bono: document.getElementById("cartera-bono").value ? parseFloat(document.getElementById("cartera-bono").value) : null,
+            calidad: document.getElementById("cartera-calidad").value,
+            m1: meses[0],
+            m2: meses[1],
+            m3: meses[2],
+            m4: meses[3],
+            m5: meses[4],
+            m6: meses[5],
+            m7: meses[6],
+            m8: meses[7],
+            m9: meses[8],
+            m10: meses[9],
+            m11: meses[10],
+            m12: meses[11],
+        };
+
+        if (carteraEditandoId) {
+            const { error } = await supabaseClient
+                .from('cartera')
+                .update(datos)
+                .eq('id', carteraEditandoId);
+            if (error) throw error;
+        } else {
+            datos.usuario = leerSesion()?.usuario;
+            const { error } = await supabaseClient
+                .from('cartera')
+                .insert([datos]);
+            if (error) throw error;
+        }
+
+        cartera_cerrarModal();
+
+        const toast = document.getElementById("toast-edit");
+        toast.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg> ¡Cliente guardado con éxito!`;
+        toast.style.display = "flex";
+        setTimeout(() => toast.style.display = "none", 3000);
+
+        await cartera_cargar();
+    } catch (e) {
+        console.error("Error guardando cliente:", e);
+        alert("Error al guardar: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.querySelector(".btn-loader").style.display = "none";
+        btn.querySelector(".btn-text").style.display = "inline";
+    }
+}
+
+async function cartera_eliminar(id) {
+    if (!confirm("¿Estás seguro de eliminar este cliente? Esta acción no se puede deshacer.")) return;
+
+    try {
+        const { error } = await supabaseClient.from('cartera').delete().eq('id', id);
+        if (error) throw error;
+        cartera_cerrarModal();
+        await cartera_cargar();
+    } catch (e) {
+        alert("Error al eliminar: " + e.message);
+    }
+}
+
+function cartera_abrirWhatsApp(celular) {
+    if (!celular) return alert("El cliente no tiene celular registrado.");
+    let phone = celular.replace(/\D/g, '');
+    if (phone.length === 9) phone = "51" + phone;
+    window.open(`https://wa.me/${phone}`, '_blank');
+}
+
+function cartera_exportarExcel() {
+    if (typeof XLSX === 'undefined') {
+        return alert("Error: Librería XLSX no encontrada.");
+    }
+
+    const q = document.getElementById("cartera-search").value.toLowerCase();
+    const plan = document.getElementById("cartera-filtro-plan").value;
+    const asesor = document.getElementById("cartera-filtro-asesor")?.value || 'todos';
+
+    let exportData = allCartera.filter(c => {
+        const txt = `${c.contratante} ${c.dni} ${c.celular}`.toLowerCase();
+        if (q && !txt.includes(q)) return false;
+        if (plan !== 'todos' && c.plan_salud !== plan) return false;
+        if (asesor !== 'todos' && c.usuario !== asesor) return false;
+        if (carteraFiltroEstado === 'aldia' && tieneMoroso(c)) return false;
+        if (carteraFiltroEstado === 'morosos' && !tieneMoroso(c)) return false;
+        if (carteraFiltroEstado === 'desafiliados' && !tieneDesafiliado(c)) return false;
+        return true;
+    }).map(c => ({
+        "Fecha Afiliación": c.fecha_afiliacion,
+        "Asesor": c.usuario,
+        "Contratante": c.contratante,
+        "DNI": c.dni,
+        "Celular": c.celular || '',
+        "Grupo Familiar": c.grupo_familiar,
+        "Plan": c.plan_salud,
+        "Calidad": c.calidad,
+        "Afiliados": c.afiliados,
+        "Mensualidad (S/)": c.mensualidad,
+        "Bono (S/)": c.bono || 0,
+        "M1": c.m1 || '', "M2": c.m2 || '', "M3": c.m3 || '', "M4": c.m4 || '',
+        "M5": c.m5 || '', "M6": c.m6 || '', "M7": c.m7 || '', "M8": c.m8 || '',
+        "M9": c.m9 || '', "M10": c.m10 || '', "M11": c.m11 || '', "M12": c.m12 || ''
+    }));
+
+    if (exportData.length === 0) {
+        return alert("No hay datos para exportar con los filtros actuales.");
+    }
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Cartera");
+    XLSX.writeFile(wb, "Cartera_Clientes.xlsx");
+}
+
+async function cartera_recargarSilencioso() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('cartera')
+            .select('*')
+            .order('fecha_afiliacion', { ascending: false });
+        if (error) return;
+        allCartera = data || [];
+        document.getElementById("cartera-sub-count").textContent = `${allCartera.length} cliente${allCartera.length !== 1 ? 's' : ''}`;
+
+        const rol = leerSesion()?.rol;
+        if (rol === "Administrador") cartera_poblarSelectAsesores();
+
+        cartera_aplicarFiltros();
+    } catch (e) {
+        // Silencioso
+    }
+}
+
+/* ══════════════════════════════════════════════
+   MODULO DE CALIDAD (VALIDACIONES) - CRUD & UI
+══════════════════════════════════════════════ */
+function cal_init() {
+    cal_cargar();
+}
+
+async function cal_cargar() {
+    const session = leerSesion();
+    const rol = session?.rol;
+    const miUser = session?.usuario;
+
+    try {
+        let query = supabaseClient.from('calidad').select('*').order('dia', { ascending: true });
+
+        if (rol !== "Administrador") {
+            query = query.eq('usuario', miUser);
+        }
+
+        const { data, error } = await query;
+        if (error) {
+            console.error("Error cargando calidad:", error);
+            return;
+        }
+        allCalidad = data || [];
+
+        // Mostrar u ocultar botón de exportar Excel basado en el rol de Administrador
+        const btnExportar = document.getElementById("cal-btn-exportar");
+        if (btnExportar) {
+            if (rol === "Administrador") {
+                btnExportar.style.display = "inline-flex";
+            } else {
+                btnExportar.style.display = "none";
+            }
+        }
+
+        const select = document.getElementById("cal-filtro-asesor");
+        if (select) {
+            if (rol === "Administrador") {
+                select.style.display = "block";
+                cal_poblarSelectAsesores();
+            } else {
+                select.style.display = "none";
+            }
+        }
+
+        cal_renderTabla();
+    } catch (e) {
+        console.error("Error en cal_cargar:", e);
+    }
+}
+
+function cal_poblarSelectAsesores() {
+    const select = document.getElementById("cal-filtro-asesor");
+    if (!select) return;
+    const valActual = select.value;
+    const asesores = [...new Set(allCalidad.map(c => c.usuario).filter(Boolean))];
+
+    select.innerHTML = '<option value="">Todos los asesores</option>';
+    asesores.forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.textContent = a;
+        select.appendChild(opt);
+    });
+    select.value = valActual;
+}
+
+function cal_filtrar(status, btn) {
+    calidadPaginaActual = 1;
+    calidadFiltroStatus = status;
+    const parent = btn.closest(".quick-filters");
+    if (parent) {
+        parent.querySelectorAll(".qf-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+    }
+    cal_renderTabla();
+}
+
+function cal_renderTabla() {
+    const container = document.getElementById("cal-tabla-container");
+    if (!container) return;
+
+    const session = leerSesion();
+    const miUsuario = session?.usuario;
+    const rol = session?.rol;
+
+    const selectedAsesor = document.getElementById("cal-filtro-asesor")?.value || "";
+
+    let filtered = allCalidad;
+
+    // 1. Filtrar por Estado (Quick Filter)
+    if (calidadFiltroStatus !== 'Todos') {
+        filtered = filtered.filter(c => c.status === calidadFiltroStatus);
+    }
+
+    // 2. Filtrar por Asesor (Supervisor only)
+    if (selectedAsesor) {
+        filtered = filtered.filter(c => c.usuario === selectedAsesor);
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state cartera-empty-state"><p>No se encontraron agendamientos.</p></div>`;
+        return;
+    }
+
+    const totalItems = filtered.length;
+    const totalPaginas = Math.ceil(totalItems / 15);
+
+    if (calidadPaginaActual > totalPaginas) calidadPaginaActual = totalPaginas;
+    if (calidadPaginaActual < 1) calidadPaginaActual = 1;
+
+    const dataPaginada = filtered.slice((calidadPaginaActual - 1) * 15, calidadPaginaActual * 15);
+
+    const isMobile = window.innerWidth <= 768;
+
+    // Obtener fecha actual en formato local YYYY-MM-DD
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const fechaHoyStr = `${anio}-${mes}-${dia}`;
+
+    if (isMobile) {
+        let html = ``;
+        dataPaginada.forEach(c => {
+            const puedeEditar = c.usuario === miUsuario || rol === 'Administrador';
+            const statusClass = cal_obtenerStatusClass(c.status);
+
+            const esAtrasada = c.dia < fechaHoyStr && c.status !== 'Llamada Ok';
+            let diaHtml = ``;
+            if (esAtrasada) {
+                diaHtml = `
+                <span style="background-color: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: var(--radius-sm); font-weight: 700; border: 1px solid #fecaca; display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem;" title="¡Urgente! Llamada retrasada">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px; flex-shrink:0;">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    ${c.dia}
+                </span>`;
+            } else {
+                diaHtml = `<span>${c.dia}</span>`;
+            }
+
+            html += `
+            <div class="cartera-row-card" ${puedeEditar ? `onclick="cal_abrirModal('${c.id}')" style="cursor:pointer;" title="Click para editar"` : ''}>
+                <div class="cartera-card-header">
+                    <div>
+                        <h4 class="cartera-card-title">${c.cliente}</h4>
+                        <span class="cartera-card-plan" style="background:#f1f5f9; color:#475569; padding:2px 6px;">Grupo: ${c.grupo_familiar}</span>
+                    </div>
+                    <span class="status-chip ${statusClass}">${c.status || 'Pendiente'}</span>
+                </div>
+                <div style="font-size:0.8rem; color:var(--slate-600); margin-bottom:8px; line-height: 1.6; display:flex; flex-direction:column; gap:4px;">
+                    <div><strong>Vendedor:</strong> ${c.usuario}</div>
+                    <div style="display:flex; align-items:center; gap:8px;"><strong>Día:</strong> ${diaHtml} <strong>Hora:</strong> ${cal_formatearHora12(c.hora)}</div>
+                </div>
+                ${c.comentario ? `<div style="font-size:0.78rem; background:#f8fafc; padding:8px; border-radius:6px; border-left:3px solid #cbd5e1; color:#475569;">${c.comentario}</div>` : ''}
+            </div>`;
+        });
+        container.innerHTML = `<div style="padding:1rem; display:flex; flex-direction:column; gap:1rem;">${html}</div>`;
+    } else {
+        let theadHtml = `
+            <tr>
+                <th class="cartera-th">Vendedor</th>
+                <th class="cartera-th">Cliente</th>
+                <th class="cartera-th">Grupo Familiar</th>
+                <th class="cartera-th">Día de llamada</th>
+                <th class="cartera-th">Hora</th>
+                <th class="cartera-th">Comentario</th>
+                <th class="cartera-th">Status</th>
+            </tr>`;
+
+        let tbodyHtml = ``;
+        dataPaginada.forEach(c => {
+            const puedeEditar = c.usuario === miUsuario || rol === 'Administrador';
+            const statusClass = cal_obtenerStatusClass(c.status);
+
+            const esAtrasada = c.dia < fechaHoyStr && c.status !== 'Llamada Ok';
+            let diaHtml = ``;
+            if (esAtrasada) {
+                diaHtml = `
+                <span style="background-color: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: var(--radius-sm); font-weight: 700; border: 1px solid #fecaca; display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem;" title="¡Urgente! Llamada retrasada">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px; flex-shrink:0;">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    ${c.dia}
+                </span>`;
+            } else {
+                diaHtml = `<span>${c.dia}</span>`;
+            }
+
+            tbodyHtml += `
+            <tr class="cartera-tr" ${puedeEditar ? `onclick="cal_abrirModal('${c.id}')" style="cursor:pointer;" title="Click para editar"` : ''}>
+                <td class="cartera-td">${c.usuario}</td>
+                <td class="cartera-td cartera-td-nombre">${c.cliente}</td>
+                <td class="cartera-td">${c.grupo_familiar}</td>
+                <td class="cartera-td" style="white-space:nowrap; vertical-align: middle;">${diaHtml}</td>
+                <td class="cartera-td" style="white-space:nowrap; vertical-align: middle;">${cal_formatearHora12(c.hora)}</td>
+                <td class="cartera-td" style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align: middle;" title="${c.comentario || ''}">${c.comentario || '—'}</td>
+                <td class="cartera-td" style="vertical-align: middle;"><span class="status-chip ${statusClass}">${c.status || 'Pendiente'}</span></td>
+            </tr>`;
+        });
+
+        container.innerHTML = `
+            <div class="cartera-table-wrap">
+                <table class="cartera-table">
+                    <thead>${theadHtml}</thead>
+                    <tbody>${tbodyHtml}</tbody>
+                </table>
+            </div>`;
+    }
+
+    if (totalItems > 15) {
+        let pagHtml = `<div class="pagination-container">`;
+        for (let p = 1; p <= totalPaginas; p++) {
+            pagHtml += `<button class="pagination-btn ${p === calidadPaginaActual ? 'active' : ''}" onclick="cal_cambiarPagina(${p})">${p}</button>`;
+        }
+        pagHtml += `</div>`;
+        container.insertAdjacentHTML('beforeend', pagHtml);
+    }
+}
+
+function cal_cambiarPagina(p) {
+    calidadPaginaActual = p;
+    cal_renderTabla();
+}
+
+function cal_cambiarFiltroAsesor() {
+    calidadPaginaActual = 1;
+    cal_renderTabla();
+}
+
+function cal_abrirExportModal() {
+    const expPendiente = document.getElementById("cal-exp-pendiente");
+    const expEnviado = document.getElementById("cal-exp-enviado");
+    const expOk = document.getElementById("cal-exp-ok");
+    const expNoContesto = document.getElementById("cal-exp-nocontesto");
+
+    if (expPendiente) expPendiente.checked = true;
+    if (expEnviado) expEnviado.checked = true;
+    if (expOk) expOk.checked = false;
+    if (expNoContesto) expNoContesto.checked = true;
+
+    const overlay = document.getElementById("calidad-export-modal-overlay");
+    if (overlay) {
+        overlay.style.display = "flex";
+        overlay.offsetHeight; // Forzar reflow para animación
+        overlay.classList.add("active");
+    }
+    document.body.style.overflow = "hidden";
+}
+
+function cal_cerrarExportModal(e) {
+    if (e && e.target !== e.currentTarget) return;
+    const overlay = document.getElementById("calidad-export-modal-overlay");
+    if (overlay) {
+        overlay.classList.remove("active");
+        setTimeout(() => {
+            overlay.style.display = "none";
+            document.body.style.overflow = "";
+        }, 250);
+    }
+}
+
+function cal_exportarExcelProcesar() {
+    if (typeof XLSX === 'undefined') {
+        return alert("Error: Librería XLSX no encontrada.");
+    }
+
+    const estados = [];
+    if (document.getElementById("cal-exp-pendiente")?.checked) estados.push("Pendiente");
+    if (document.getElementById("cal-exp-enviado")?.checked) estados.push("Enviado a Calidad");
+    if (document.getElementById("cal-exp-ok")?.checked) estados.push("Llamada Ok");
+    if (document.getElementById("cal-exp-nocontesto")?.checked) estados.push("No contestó");
+
+    if (estados.length === 0) {
+        return alert("Por favor, selecciona al menos un estado para exportar.");
+    }
+
+    const selectedAsesor = document.getElementById("cal-filtro-asesor")?.value || "";
+
+    let exportData = allCalidad.filter(c => {
+        if (!estados.includes(c.status)) return false;
+        if (selectedAsesor && c.usuario !== selectedAsesor) return false;
+        return true;
+    });
+
+    if (exportData.length === 0) {
+        return alert("No hay datos para exportar con los estados seleccionados.");
+    }
+
+    const dataMapeada = exportData.map(c => ({
+        "Vendedor": c.usuario || "",
+        "Cliente": c.cliente || "",
+        "Grupo Familiar": c.grupo_familiar || 0,
+        "Día de llamada": c.dia || "",
+        "Hora": cal_formatearHora12(c.hora) || "",
+        "Comentario": c.comentario || "",
+        "Status": c.status || "Pendiente"
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dataMapeada);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Validaciones");
+
+    const hoy = new Date();
+    const fechaStr = hoy.toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `Reporte_Validaciones_${fechaStr}.xlsx`);
+
+    cal_cerrarExportModal();
+}
+
+function cal_obtenerStatusClass(status) {
+    switch (status) {
+        case 'Pendiente': return 'pendiente';
+        case 'Enviado a Calidad': return 'enviado';
+        case 'Llamada Ok': return 'llamada-ok';
+        case 'No contestó': return 'no-contesto';
+        default: return 'pendiente';
+    }
+}
+
+function cal_formatearHora12(timeString) {
+    if (!timeString) return '—';
+    const parts = timeString.split(':');
+    if (parts.length < 2) return timeString;
+    let hours = parseInt(parts[0], 10);
+    const minutesStr = parts[1];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // la hora '0' debe ser '12'
+    return `${hours}:${minutesStr} ${ampm}`;
+}
+
+function cal_abrirModal(id = null) {
+    calidadEditandoId = id;
+    const form = document.getElementById("cal-form");
+    if (form) form.reset();
+
+    document.getElementById("cal-modal-title").textContent = id ? "Editar Agendamiento" : "Agendar Llamada";
+
+    const delWrap = document.getElementById("cal-btn-eliminar-wrap");
+    if (delWrap) delWrap.innerHTML = "";
+
+    if (id) {
+        // Modo Edición: Mostrar dropdown de Status
+        document.getElementById("cal-status-wrap").style.display = "block";
+        const c = allCalidad.find(x => x.id === id);
+        if (c) {
+            document.getElementById("cal-cliente").value = c.cliente || '';
+            document.getElementById("cal-grupo").value = c.grupo_familiar || '';
+            document.getElementById("cal-dia").value = c.dia || '';
+            document.getElementById("cal-hora").value = c.hora || '';
+            document.getElementById("cal-status").value = c.status || 'Pendiente';
+            document.getElementById("cal-comentario").value = c.comentario || '';
+
+            const miUsuario = leerSesion()?.usuario;
+            const rol = leerSesion()?.rol;
+            if (c.usuario === miUsuario || rol === 'Administrador') {
+                delWrap.innerHTML = `<button type="button" class="btn-cancel" style="background:#fee2e2; color:#dc2626; border-color:#fecaca;" onclick="cal_eliminar('${id}')">Eliminar</button>`;
+            }
+        }
+    } else {
+        // Modo Creación: Ocultar dropdown (se guardará por defecto como 'Pendiente')
+        document.getElementById("cal-status-wrap").style.display = "none";
+    }
+
+    const overlay = document.getElementById("calidad-modal-overlay");
+    if (overlay) {
+        overlay.style.display = "flex";
+        overlay.offsetHeight; // Forzar reflow para animación
+        overlay.classList.add("active");
+    }
+    document.body.style.overflow = "hidden";
+}
+
+function cal_cerrarModal(event = null) {
+    if (event && event.target !== event.currentTarget) return;
+    const overlay = document.getElementById("calidad-modal-overlay");
+    if (overlay) {
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+        setTimeout(() => { overlay.style.display = "none"; }, 250);
+    }
+}
+
+async function cal_guardar(e) {
+    e.preventDefault();
+    const miUsuario = leerSesion()?.usuario;
+
+    const cliente = document.getElementById("cal-cliente").value.trim();
+    const grupo = parseInt(document.getElementById("cal-grupo").value, 10);
+    const dia = document.getElementById("cal-dia").value;
+    const hora = document.getElementById("cal-hora").value;
+    const comentario = document.getElementById("cal-comentario").value.trim();
+
+    // Si estamos editando leemos el status, si no se guarda como 'Pendiente' por defecto
+    const status = calidadEditandoId ? document.getElementById("cal-status").value : 'Pendiente';
+
+    const payload = {
+        cliente,
+        grupo_familiar: grupo,
+        dia,
+        hora,
+        comentario,
+        status
+    };
+
+    try {
+        if (calidadEditandoId) {
+            // Actualizar
+            const { error } = await supabaseClient
+                .from('calidad')
+                .update(payload)
+                .eq('id', calidadEditandoId);
+            if (error) throw error;
+            mostrarToast("Agendamiento actualizado");
+        } else {
+            // Crear nuevo
+            payload.usuario = miUsuario;
+            const { error } = await supabaseClient
+                .from('calidad')
+                .insert([payload]);
+            if (error) throw error;
+            mostrarToast("Llamada agendada");
+        }
+
+        cal_cerrarModal();
+        cal_cargar(); // Recargar datos
+    } catch (err) {
+        console.error("Error guardando:", err);
+        alert("Error al guardar: " + err.message);
+    }
+}
+
+async function cal_eliminar(id) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este agendamiento?")) return;
+    try {
+        const { error } = await supabaseClient
+            .from('calidad')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        mostrarToast("Agendamiento eliminado");
+        cal_cerrarModal();
+        cal_cargar();
+    } catch (err) {
+        console.error("Error eliminando:", err);
+        alert("Error al eliminar: " + err.message);
+    }
+}
+
+async function cal_recargarSilencioso() {
+    const session = leerSesion();
+    const rol = session?.rol;
+    const miUser = session?.usuario;
+
+    try {
+        let query = supabaseClient.from('calidad').select('*').order('dia', { ascending: true });
+        if (rol !== "Administrador") {
+            query = query.eq('usuario', miUser);
+        }
+        const { data, error } = await query;
+        if (error) return;
+        allCalidad = data || [];
+
+        // Mostrar u ocultar botón de exportar Excel basado en el rol de Administrador
+        const btnExportar = document.getElementById("cal-btn-exportar");
+        if (btnExportar) {
+            if (rol === "Administrador") {
+                btnExportar.style.display = "inline-flex";
+            } else {
+                btnExportar.style.display = "none";
+            }
+        }
+
+        if (rol === "Administrador") cal_poblarSelectAsesores();
+        cal_renderTabla();
+    } catch (e) {
+        // Silencioso
+    }
+}
+
+function mostrarToast(mensaje) {
+    const toast = document.getElementById("toast-edit");
+    if (toast) {
+        toast.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg> ${mensaje}`;
+        toast.style.display = "flex";
+        setTimeout(() => { toast.style.display = "none"; }, 3000);
     }
 }
