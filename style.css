@@ -598,7 +598,7 @@ textarea {
 }
 
 .content-wrapper {
-    max-width: 780px;
+    max-width: 960px;
     margin: 0 auto;
 }
 
@@ -1429,7 +1429,11 @@ form {
         margin-bottom: 2rem;
     }
 
-    .brand-badge, .brand-headline, .brand-sub, .brand-stats, .brand-decor {
+    .brand-badge,
+    .brand-headline,
+    .brand-sub,
+    .brand-stats,
+    .brand-decor {
         transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
     }
 
@@ -4957,7 +4961,8 @@ textarea::placeholder {
     max-width: 440px !important;
     width: 95% !important;
     border-radius: 20px !important;
-    overflow: hidden;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
     padding: 0 !important;
     background: #ffffff !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
@@ -5430,4 +5435,518 @@ textarea::placeholder {
 .team-copy-btn svg {
     width: 14px;
     height: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   CARTERA DE CLIENTES MODULO
+══════════════════════════════════════════════ */
+.cartera-panel {
+    display: none;
+}
+
+.cartera-panel.active {
+    display: block;
+}
+
+.cartera-header-card {
+    background: linear-gradient(135deg, var(--blue-800), var(--blue-600));
+    padding: 1.5rem 1.75rem;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--white);
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.cartera-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cartera-header-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+}
+
+.cartera-header-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--white);
+}
+
+.cartera-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+.cartera-sub {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0.25rem 0 0 0;
+}
+
+.cartera-header-right {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.btn-export-cartera {
+    background: #10b981;
+    border-color: #10b981;
+    color: var(--white);
+}
+
+.btn-export-cartera:hover {
+    background: #059669;
+    border-color: #059669;
+}
+
+.cartera-filtros-bar {
+    padding: 1.25rem 1.75rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quick-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.qf-btn {
+    background: var(--white);
+    border: 1px solid #cbd5e1;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.qf-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.qf-btn.active {
+    background: var(--blue-700);
+    border-color: var(--blue-700);
+    color: var(--white);
+}
+
+.cartera-filtros-right {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cartera-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.cartera-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.88rem;
+}
+
+.cartera-th {
+    background: #f8fafc;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.cartera-td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.cartera-tr:hover {
+    background: #f8fafc;
+}
+
+/* Chips de meses */
+.meses-grid-table {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+}
+
+.mes-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    user-select: none;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.mes-chip.pagado {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.mes-chip.pendiente {
+    background-color: #fef9c3;
+    /* Amarillo pastel suave y elegante */
+    color: #a16207;
+    /* Texto dorado oscuro de alto contraste y suavizado */
+}
+
+.mes-chip.moroso {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.mes-chip.desafiliado {
+    background-color: #09090b;
+    /* Color negro sólido y notorio */
+    color: #ffffff;
+    /* Texto blanco en alto contraste */
+    text-decoration: line-through;
+    opacity: 1 !important;
+}
+
+.mes-chip.cuota-activa {
+    width: 25px !important;
+    height: 25px !important;
+    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+    transform: scale(1.15);
+    z-index: 5;
+    box-shadow: 0 0 0 2px var(--blue-500), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin: 0 2px;
+}
+
+/* WhatsApp button styles */
+.btn-whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #16a34a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-whatsapp-link:hover {
+    text-decoration: underline;
+}
+
+.btn-whatsapp-link svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* Modal Cartera */
+.cartera-modal-overlay {
+    backdrop-filter: blur(8px);
+}
+
+.cartera-modal {
+    max-width: 720px;
+    width: 92%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--white);
+    box-shadow: var(--shadow-2xl);
+}
+
+.cartera-modal-header {
+    background: linear-gradient(135deg, var(--blue-800), var(--blue-600));
+    color: var(--white);
+}
+
+.cartera-modal-body {
+    padding: 1.75rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.cartera-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--slate-900);
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Grid de meses en el modal */
+.cartera-meses-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.mes-select-group {
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.mes-select-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--slate-700);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mes-select-group select {
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    padding: 0.35rem;
+    font-size: 0.78rem;
+    background: var(--white);
+    color: var(--slate-800);
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Mobile cards */
+.cartera-mobile-cards {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cartera-row-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cartera-row-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.cartera-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.cartera-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--slate-900);
+}
+
+.cartera-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--slate-600);
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+
+.cartera-meses-scroll {
+    overflow-x: auto;
+    padding: 0.25rem 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+}
+
+.cartera-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Empty states */
+.cartera-empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--slate-500);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cartera-meses-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .cartera-meses-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cartera-header-card {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .cartera-filtros-bar {
+        padding: 1rem 1.25rem;
+    }
+}
+
+/* ══════════════════════════════════════════════
+   MODULO DE CALIDAD (VALIDACIONES)
+══════════════════════════════════════════════ */
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.status-chip.pendiente {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.status-chip.enviado {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.status-chip.llamada-ok {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.status-chip.no-contesto {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* ─── Premium Pagination Styles ─── */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.pagination-btn {
+    background: var(--white);
+    border: 1px solid var(--slate-200);
+    color: var(--slate-600);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.pagination-btn:hover {
+    background: var(--slate-50);
+    border-color: var(--slate-300);
+    color: var(--slate-800);
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, var(--blue-800), var(--blue-600));
+    color: var(--white);
+    border-color: transparent;
+}
+
+/* Custom premium checkboxes */
+input[type="checkbox"] {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid var(--slate-300) !important;
+    border-radius: 6px !important;
+    background: var(--white) !important;
+    display: grid !important;
+    place-content: center !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--blue-500) !important;
+    background: var(--blue-50) !important;
+}
+
+input[type="checkbox"]:checked {
+    background: var(--blue-600) !important;
+    border-color: var(--blue-600) !important;
+}
+
+input[type="checkbox"]::before {
+    content: "" !important;
+    width: 10px !important;
+    height: 10px !important;
+    transform: scale(0) !important;
+    transition: 120ms transform ease-in-out !important;
+    background-color: var(--white) !important;
+    clip-path: polygon(14% 44%, 0 58%, 38% 96%, 100% 23%, 86% 9%, 38% 68%) !important;
+}
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1) !important;
 }
