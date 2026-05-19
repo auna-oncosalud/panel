@@ -740,19 +740,33 @@
                             </div>
                         </div>
 
-                        <button id="cot_btnActuarial" onclick="cot_toggleActuarial()" class="cot-actuarial-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" />
-                                <line x1="16" y1="2" x2="16" y2="6" />
-                                <line x1="8" y1="2" x2="8" y2="6" />
-                                <line x1="3" y1="10" x2="21" y2="10" />
-                            </svg>
-                            <div class="cot-actuarial-text">
-                                <span class="cot-actuarial-label">Edad Actuarial</span>
-                                <span class="cot-actuarial-sub">Calcula la edad redondeada al año más cercano</span>
-                            </div>
-                            <span id="cot_actuarial-status" class="cot-actuarial-status off">Desactivado</span>
-                        </button>
+                        <div class="cot-toggles-grid">
+                            <button id="cot_btnActuarial" onclick="cot_toggleActuarial()" class="cot-toggle-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                <div class="cot-toggle-text">
+                                    <span class="cot-toggle-label">Edad Actuarial</span>
+                                    <span class="cot-toggle-sub">Redondeo al año cercano</span>
+                                </div>
+                                <span id="cot_actuarial-status" class="cot-toggle-status cot-status-off">Off</span>
+                            </button>
+
+                            <button id="cot_btnPago" onclick="cot_togglePago()" class="cot-toggle-btn active">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                                    <line x1="2" y1="10" x2="22" y2="10" />
+                                </svg>
+                                <div class="cot-toggle-text">
+                                    <span class="cot-toggle-label">Método de Pago</span>
+                                    <span class="cot-toggle-sub">Crédito / Débito</span>
+                                </div>
+                                <span id="cot_pago-status" class="cot-toggle-status cot-status-on">Crédito</span>
+                            </button>
+                        </div>
 
                         <div class="field-group">
                             <label class="field-label">
@@ -872,7 +886,7 @@
                             <div id="cot_cotizacion-final" class="cot-card">
 
                                 <div class="cot-card-top">
-                                    <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/f_auto,q_auto/AUNA_1_cfdhdt"
+                                    <img src="https://res.cloudinary.com/dwxiuavqd/image/upload/v1778164946/AUNA_1_cfdhdt_equgtw.png"
                                         alt="Auna" class="cot-logo" crossorigin="anonymous">
                                     <span class="cot-badge-oficial">Cotización Oficial</span>
                                 </div>
@@ -1991,7 +2005,7 @@
     </div>
 
 
-    <script src="script.js?v=2.2"></script>
+    <script src="script.js?v=2.6"></script>
 </body>
 
 </html>
