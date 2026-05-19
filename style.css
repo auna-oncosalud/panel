@@ -3082,9 +3082,9 @@ textarea::placeholder {
     }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ══════════════════════════════════════════════
    COTIZADOR TAB
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+══════════════════════════════════════════════ */
 
 /* Panel container */
 .cot-panel {
@@ -3094,7 +3094,7 @@ textarea::placeholder {
 /* Two-column grid */
 .cot-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 1.5rem;
     align-items: start;
 }
@@ -3108,7 +3108,7 @@ textarea::placeholder {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .cot-controls-header {
@@ -3154,7 +3154,7 @@ textarea::placeholder {
     flex-shrink: 0;
 }
 
-/* Dropdown wrapper â€” needs position:relative so the absolute dropdown positions correctly */
+/* Dropdown wrapper — needs position:relative so the absolute dropdown positions correctly */
 .cot-controls-header>div:first-child {
     position: relative;
 }
@@ -3256,38 +3256,20 @@ textarea::placeholder {
     text-align: center;
 }
 
-/* Toggle row â€” replaced by button */
-.cot-toggle-row {
+/* Toggle buttons grid (Actuarial + Pago) */
+.cot-toggles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+/* Toggle button — shared by Actuarial & Pago */
+.cot-toggle-btn {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 10px 14px;
-    background: var(--blue-50);
-    border: 1px solid var(--blue-100);
-    border-radius: var(--radius-md);
-}
-
-.cot-toggle-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--slate-700);
-}
-
-.cot-toggle-sub {
-    font-size: 0.72rem;
-    color: var(--slate-400);
-    margin-top: 1px;
-}
-
-/* Actuarial button */
-.cot-actuarial-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--slate-100);
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--slate-50);
     border: 2px solid var(--slate-200);
     border-radius: var(--radius-md);
     cursor: pointer;
@@ -3296,57 +3278,81 @@ textarea::placeholder {
     margin: 0;
     box-shadow: none;
     font-family: 'Outfit', sans-serif;
+    width: 100%;
 }
 
-.cot-actuarial-btn svg {
-    width: 20px;
-    height: 20px;
+.cot-toggle-btn.active {
+    background: var(--blue-50);
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.cot-toggle-btn svg {
+    width: 18px;
+    height: 18px;
     color: var(--slate-400);
     flex-shrink: 0;
     transition: color var(--transition);
 }
 
-.cot-actuarial-btn.active {
-    background: var(--blue-50);
-    border-color: var(--blue-500);
-    box-shadow: 0 0 0 3px rgba(0, 123, 195, 0.12);
-}
-
-.cot-actuarial-btn.active svg {
+.cot-toggle-btn.active svg {
     color: var(--blue-500);
 }
 
-.cot-actuarial-text {
+.cot-toggle-text {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
+    min-width: 0;
 }
 
-.cot-actuarial-label {
-    font-size: 0.85rem;
+.cot-toggle-label {
+    font-size: 0.82rem;
     font-weight: 700;
     color: var(--slate-700);
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.cot-actuarial-btn.active .cot-actuarial-label {
+.cot-toggle-btn.active .cot-toggle-label {
     color: var(--blue-800);
 }
 
-.cot-actuarial-sub {
-    font-size: 0.71rem;
+.cot-toggle-sub {
+    font-size: 0.68rem;
     color: var(--slate-400);
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.cot-actuarial-status {
+.cot-toggle-status {
     flex-shrink: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 3px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 3px 8px;
     border-radius: 100px;
     letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.cot-status-off {
+    background: var(--slate-200);
+    color: var(--slate-500);
+}
+
+.cot-status-on {
+    background: var(--blue-100);
+    color: var(--blue-700);
+}
+
+/* Legacy aliases (keep compatibility with existing JS) */
+.cot-actuarial-btn {
+    display: none;
 }
 
 .cot-actuarial-status.off {
@@ -3373,7 +3379,6 @@ textarea::placeholder {
     cursor: pointer;
     transition: border-color var(--transition);
     -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
 }
 
@@ -3387,8 +3392,23 @@ textarea::placeholder {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-height: 300px;
+    max-height: 380px;
     overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Custom scrollbar for integrantes wrap */
+.cot-integrantes-wrap::-webkit-scrollbar {
+    width: 4px;
+}
+
+.cot-integrantes-wrap::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cot-integrantes-wrap::-webkit-scrollbar-thumb {
+    background: var(--slate-200);
+    border-radius: 10px;
 }
 
 .cot-integrante-box {
@@ -3441,7 +3461,6 @@ textarea::placeholder {
     outline: none;
     transition: border-color var(--transition), box-shadow var(--transition);
     -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
 }
 
@@ -3512,7 +3531,6 @@ textarea::placeholder {
     outline: none;
     transition: border-color var(--transition);
     -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
 }
 
@@ -3561,42 +3579,86 @@ textarea::placeholder {
     background: var(--slate-900);
 }
 
-.cot-btn-pago {
+.cot-btn-tertiary {
     width: 100%;
-    background: linear-gradient(135deg, #00acc1 0%, #007bc3 100%);
+    background: #00acc1;
     color: white;
     border: none;
     border-radius: var(--radius-sm);
-    padding: 13px 16px;
+    padding: 11px 16px;
     font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.88rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: background var(--transition);
+    margin: 0;
+    box-shadow: none;
+}
+
+.cot-btn-tertiary:hover {
+    background: #0093a6;
+}
+
+
+/* Payment link button styling */
+.cot-btn-pago {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    background: transparent;
+    color: var(--blue-600);
+    border: 2.5px solid var(--blue-100);
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
     transition: all var(--transition);
-    box-shadow: 0 4px 14px rgba(0, 172, 193, 0.3);
     margin: 0;
-}
-
-.cot-btn-pago svg {
-    width: 17px;
-    height: 17px;
+    box-shadow: none;
 }
 
 .cot-btn-pago:hover {
-    background: linear-gradient(135deg, #007bc3 0%, #00acc1 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 172, 193, 0.4);
+    background: var(--blue-50);
+    border-color: var(--blue-300);
+    color: var(--blue-800);
 }
 
-.cot-btn-pago:active {
-    transform: translateY(0);
+.cot-btn-pago svg {
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+    margin: 0;
 }
 
-/* Preview side â€” height is set by JS (cot_ajustarEscala) */
+/* Contracting Party / Contratante Box inside Card Preview */
+.cot-contratante-box {
+    margin: -10px 32px 20px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+}
+
+.cot-contratante-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.cot-contratante-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e293b;
+    font-family: 'Outfit', sans-serif;
+}
+
 .cot-preview-wrap {
     display: flex;
     justify-content: center;
@@ -3614,7 +3676,7 @@ textarea::placeholder {
 }
 
 /*
-  THE QUOTE CARD â€” 450px wide, matches reference design exactly
+  THE QUOTE CARD — 450px wide, matches reference design exactly
   JS scales it to fit the available preview column.
 */
 .cot-card {
@@ -3648,13 +3710,14 @@ textarea::placeholder {
     background: #ecfeff;
     color: #0e7490;
     font-size: 10px;
-    font-weight: 700;
-    padding: 4px 12px;
+    font-weight: 800;
+    padding: 4px 14px;
     border-radius: 100px;
-    border: 1px solid #a5f3fc;
-    letter-spacing: 0.08em;
+    border: 1.5px solid #a5f3fc;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
     white-space: nowrap;
+    display: inline-block;
 }
 
 /* Subtitle */
@@ -3664,57 +3727,34 @@ textarea::placeholder {
 }
 
 .cot-card-subtitle h3 {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 19px;
+    font-weight: 800;
     color: #1e293b;
     line-height: 1.4;
 }
 
 /* Plan banner */
 .cot-plan-banner {
-    margin: 0 32px 20px;
-    padding: 14px 18px;
+    margin: 0 32px 24px;
+    padding: 16px 20px;
     background: #00acc1;
-    border-radius: 16px;
+    border-radius: 18px;
     color: white;
     flex-shrink: 0;
 }
 
 .cot-plan-label {
     font-size: 10px;
-    letter-spacing: 0.12em;
+    font-weight: 800;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.8;
-    margin-bottom: 3px;
-}
-
-.cot-plan-banner h4 {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-/* Contratante Box */
-.cot-contratante-box {
-    margin: 0 32px 16px;
-    padding: 12px 18px;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px dashed #cbd5e1;
-    text-align: left;
-}
-
-.cot-contratante-label {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748b;
     margin-bottom: 4px;
 }
 
-.cot-contratante-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: #0f172a;
+.cot-plan-banner h4 {
+    font-size: 19px;
+    font-weight: 800;
 }
 
 /* Lista integrantes */
@@ -3732,7 +3772,7 @@ textarea::placeholder {
     align-items: center;
     font-size: 14px;
     border-bottom: 1px solid #f1f5f9;
-    padding: 10px 0;
+    padding: 12px 0;
 }
 
 .cot-lista-item:last-child {
@@ -3741,39 +3781,54 @@ textarea::placeholder {
 
 .cot-lista-name {
     color: #475569;
-    font-weight: 500;
-    margin-right: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    padding-right: 10px;
+}
+
+/* Price wrap for items */
+.cot-lista-price-wrap {
+    text-align: right;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
 }
 
 .cot-lista-reg-through {
-    font-size: 10px;
+    font-size: 11px;
     text-decoration: line-through;
     color: #cbd5e1;
+    font-weight: 600;
     display: block;
     text-align: right;
     white-space: nowrap;
 }
 
 .cot-lista-promo {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     color: #00acc1;
     white-space: nowrap;
     display: block;
     text-align: right;
+    margin-top: 2px;
 }
 
 .cot-lista-reg-only {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     color: #1e293b;
     white-space: nowrap;
 }
 
 /* Total con descuento */
 .cot-total-box {
-    margin: 28px 32px 0;
-    padding: 20px 22px;
+    margin: 24px 32px 0;
+    padding: 24px;
     background: #0f172a;
     border-radius: 24px;
     color: white;
@@ -3784,7 +3839,8 @@ textarea::placeholder {
 }
 
 .cot-total-label {
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 600;
     opacity: 0.70;
     margin-bottom: 4px;
 }
@@ -3792,22 +3848,33 @@ textarea::placeholder {
 .cot-total-amounts {
     display: flex;
     align-items: baseline;
-    gap: 20px;
+    gap: 12px;
     white-space: nowrap;
+    position: relative;
 }
 
 .cot-amount-promo {
-    font-size: 30px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     color: #00acc1;
     white-space: nowrap;
+    display: flex;
+    align-items: baseline;
+    font-family: 'Inter', sans-serif;
 }
 
 .cot-amount-reg {
     font-size: 14px;
     text-decoration: line-through;
-    opacity: 0.40;
+    opacity: 0.30;
+    font-weight: 600;
     white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.cot-symbol {
+    font-size: 1em;
+    margin-right: 3px;
 }
 
 .cot-oferta-tag {
@@ -3872,28 +3939,32 @@ textarea::placeholder {
 
 /* Total sin descuento */
 .cot-total-regular {
-    margin: 28px 32px 0;
-    padding: 20px 22px;
-    background: #f1f5f9;
+    margin: 24px 32px 0;
+    padding: 24px;
+    background: #f8fafc;
     border-radius: 24px;
-    border: 1px solid #e2e8f0;
+    border: 1.5px solid #e2e8f0;
     flex-shrink: 0;
 }
 
 .cot-total-label-reg {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 700;
     color: #94a3b8;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .cot-amount-solo-reg {
-    font-size: 30px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     color: #1e293b;
     white-space: nowrap;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Spacer before footer â€” grows to fill space if needed */
+/* Spacer before footer — grows to fill space if needed */
 .cot-card-spacer {
     min-height: 20px;
     flex: 1;
@@ -3915,7 +3986,7 @@ textarea::placeholder {
 }
 
 /* Responsive cotizador */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .cot-grid {
         grid-template-columns: 1fr;
     }
@@ -3923,9 +3994,17 @@ textarea::placeholder {
     .cot-extras-grid {
         grid-template-columns: 1fr;
     }
+
+    .cot-toggles-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
-
+@media (max-width: 480px) {
+    .cot-toggles-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
