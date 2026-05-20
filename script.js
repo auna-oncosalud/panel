@@ -6,7 +6,41 @@
 const SUPABASE_URL = 'https://yemdfadeczjrvxptyerl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbWRmYWRlY3pqcnZ4cHR5ZXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NzU1OTMsImV4cCI6MjA4NzQ1MTU5M30.MrWtFAhekPyuEUs0zgT3VSqYgPwd9o25lMdCuhxqwg4';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Custom Fetch para destruir sockets congelados por el Sistema Operativo (Chrome Mobile)
+const customSupabaseFetch = async (url, options) => {
+    // Si es un request crítico del login (auth o rpc) usamos un timeout agresivo con reintento
+    const isLoginCritical = url.includes('/auth/v1/') || url.includes('/rest/v1/rpc/');
+    const timeoutMs = isLoginCritical ? 2500 : 15000; // 2.5s es suficiente para darse cuenta de un cuelgue TCP
+    
+    let controller = new AbortController();
+    let timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        // Si el request inicial aborta por timeout, es casi seguro un socket zombie.
+        // Al lanzar un nuevo fetch inmediatamente después de abortar, el navegador 
+        // crea una nueva conexión TCP limpia, resolviendo el cuelgue mágicamente.
+        if (error.name === 'AbortError' && isLoginCritical) {
+            console.log("Socket muerto detectado. Forzando nueva conexión TCP...");
+            controller = new AbortController();
+            timeoutId = setTimeout(() => controller.abort(), 8000); // El reintento tiene más tiempo por si la red es lenta
+            const retryResponse = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timeoutId);
+            return retryResponse;
+        }
+        throw error;
+    }
+};
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    global: {
+        fetch: customSupabaseFetch
+    }
+});
 
 // ─── Variables Globales ───
 let allLeads = [];
