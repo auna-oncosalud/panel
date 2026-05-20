@@ -325,19 +325,25 @@ async function login() {
     setLoginLoading(true);
     document.getElementById("login-error").style.display = "none";
 
-    // Capa 3: Exorcismo de Sesión Zombie (Limpieza profunda)
-    try {
-        await supabaseClient.auth.signOut().catch(() => { });
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('sb-')) localStorage.removeItem(key);
-        });
-    } catch (e) {
-        console.warn("No se pudo limpiar la caché local (SecurityError o similar)", e);
-    }
-
     try {
         // Capa 2: Freno de Emergencia (Timeout de 8 segundos)
         const loginPromise = (async () => {
+            // Capa 3: Exorcismo de Sesión Zombie (Limpieza profunda)
+            // Se mueve DENTRO de la promesa para que el timeout de 8s aplique en caso de que signOut() se cuelgue por red suspendida
+            try {
+                // Lanzamos la limpieza de Supabase. Si se cuelga, el Promise.race nos salvará.
+                // Usamos un timeout interno muy corto para el signOut y no bloquear el login.
+                const signoutPromise = supabaseClient.auth.signOut().catch(() => { });
+                const signoutTimeout = new Promise(resolve => setTimeout(resolve, 2000));
+                await Promise.race([signoutPromise, signoutTimeout]);
+                
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('sb-')) localStorage.removeItem(key);
+                });
+            } catch (e) {
+                console.warn("No se pudo limpiar la caché local (SecurityError o similar)", e);
+            }
+
             // 1. Buscamos el email real en la base de datos
             const { data: emailLogin } = await supabaseClient.rpc('obtener_email_de_usuario', { p_username: userIn });
 
