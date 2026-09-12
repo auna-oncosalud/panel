@@ -652,6 +652,105 @@
             }
         }
 
+        /* ── POPUP (reemplaza alert() del navegador) ── */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+        }
+
+        .popup-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 360px;
+            width: 100%;
+            padding: 2rem 1.75rem 1.75rem;
+            text-align: center;
+            transform: translateY(10px) scale(0.97);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .popup-overlay.active .popup-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .popup-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+
+        .popup-icon.warning {
+            background: var(--red-100);
+        }
+
+        .popup-icon.warning svg {
+            color: var(--red-500);
+        }
+
+        .popup-icon.info {
+            background: var(--blue-50);
+        }
+
+        .popup-icon.info svg {
+            color: var(--blue-500);
+        }
+
+        .popup-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .popup-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.3rem;
+            color: var(--blue-900);
+            margin-bottom: 0.6rem;
+        }
+
+        .popup-card p {
+            font-size: 0.9rem;
+            color: var(--slate-600);
+            line-height: 1.55;
+            margin-bottom: 1.5rem;
+        }
+
+        .popup-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 13px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 95, 204, 0.35);
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 1rem 0.75rem 4rem;
@@ -869,6 +968,22 @@
 
     </div>
 
+    <div id="popup-overlay" class="popup-overlay" onclick="cerrarPopup(event)">
+        <div class="popup-card">
+            <div id="popup-icon" class="popup-icon warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <h3 id="popup-titulo">Faltan datos</h3>
+            <p id="popup-mensaje"></p>
+            <button class="popup-btn" onclick="cerrarPopup()">Entendido</button>
+        </div>
+    </div>
+
     <script>
         // ─── CONFIGURACIÓN DE SUPABASE ───
         const SUPABASE_URL = 'https://yemdfadeczjrvxptyerl.supabase.co'; // REEMPLAZAR
@@ -880,6 +995,25 @@
         const USUARIO = decodeURIComponent(new URLSearchParams(window.location.search).get("u") || "encuesta");
 
         let asesorData = null;
+
+        function mostrarPopup(mensaje, opciones = {}) {
+            document.getElementById("popup-titulo").textContent = opciones.titulo || "Faltan datos";
+            document.getElementById("popup-mensaje").textContent = mensaje;
+            const icono = document.getElementById("popup-icon");
+            icono.className = "popup-icon " + (opciones.tipo || "warning");
+
+            const overlay = document.getElementById("popup-overlay");
+            overlay.style.display = "flex";
+            overlay.offsetHeight;
+            overlay.classList.add("active");
+        }
+
+        function cerrarPopup(event) {
+            if (event && event.target !== document.getElementById("popup-overlay")) return;
+            const overlay = document.getElementById("popup-overlay");
+            overlay.classList.remove("active");
+            setTimeout(() => { overlay.style.display = "none"; }, 200);
+        }
 
         async function cargarAsesorData() {
             const btnWa = document.getElementById("btn-whatsapp");
@@ -904,14 +1038,14 @@
 
         function contactarAsesorWhatsApp() {
             if (!validar()) {
-                alert("Por favor completa todos los datos antes de contactar a un asesor.");
+                mostrarPopup("Por favor completa todos los datos antes de contactar a un asesor.", { titulo: "Faltan datos" });
                 const firstErr = document.querySelector(".invalid");
                 if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
                 return;
             }
 
             if (!asesorData || !asesorData.celular) {
-                alert("Este asesor no tiene un número de WhatsApp configurado.");
+                mostrarPopup("Este asesor no tiene un número de WhatsApp configurado.", { titulo: "No disponible", tipo: "info" });
                 return;
             }
 
@@ -1043,7 +1177,7 @@
             } catch (err) {
                 btn.disabled = false;
                 btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> ¡Quiero mi asesoría gratuita!`;
-                alert("Hubo un error al enviar. Por favor intenta de nuevo.");
+                mostrarPopup("Hubo un error al enviar. Por favor intenta de nuevo.", { titulo: "Ups, algo falló" });
             }
         }
     </script>
