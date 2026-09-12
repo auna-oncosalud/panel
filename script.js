@@ -473,10 +473,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") document.getElementById("password").focus();
     });
 
-    ["telefono", "edit-telefono", "edad", "edit-edad"].forEach((id) => {
+    ["telefono", "edit-telefono", "edad", "edit-edad", "new-user-celular"].forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const isTel = id.includes("telefono");
+        const isTel = id.includes("telefono") || id.includes("celular");
         el.setAttribute("maxlength", isTel ? "9" : "3");
         el.setAttribute("inputmode", "numeric");
         el.addEventListener("input", () => { el.value = el.value.replace(/\D/g, "").slice(0, isTel ? 9 : 3); });
@@ -877,7 +877,11 @@ function aplicarFiltros(preservePage = false) {
             (l.nombre || "").toLowerCase().includes(q) ||
             (l.producto || "").toLowerCase().includes(q) ||
             (l.telefono || "").toString().includes(q) ||
-            (l.usuario || "").toLowerCase().includes(q);
+            (l.usuario || "").toLowerCase().includes(q) ||
+            (l.empresa || "").toLowerCase().includes(q) ||
+            (l.dni || "").toString().includes(q) ||
+            (l.correo || "").toLowerCase().includes(q) ||
+            (l.programa_interes || "").toLowerCase().includes(q);
 
         let fechaOk = true;
         const fechaLead = parseFechaParaFiltro(l.fecha);
@@ -1062,7 +1066,7 @@ function ejecutarExportacion() {
     const usuario = leerSesion()?.agente || leerSesion()?.usuario || "";
     const filename = (document.getElementById("export-filename").value.trim() || "Mis_Leads") + ".xlsx";
 
-    const headers = ["Fecha", "Nombre", "Teléfono", "Edad", "Producto", "Temperatura", ...(mostrarAsesor ? ["Asesor"] : []), "Referencia", "Comentarios"];
+    const headers = ["Fecha", "Nombre", "Teléfono", "Edad", "Producto", "Temperatura", ...(mostrarAsesor ? ["Asesor"] : []), "Referencia", "Comentarios", "Empresa", "DNI", "Correo", "Programa de Interés"];
 
     const filas = datos.map(d => {
         const row = {
@@ -1074,6 +1078,10 @@ function ejecutarExportacion() {
             "Temperatura": d.temperatura || "",
             "Referencia": d.referencia || "",
             "Comentarios": d.comentarios || "",
+            "Empresa": d.empresa || "",
+            "DNI": d.dni || "",
+            "Correo": d.correo || "",
+            "Programa de Interés": d.programa_interes || "",
         };
         if (mostrarAsesor) row["Asesor"] = d.usuario || "";
         const ordered = {};
@@ -1085,6 +1093,7 @@ function ejecutarExportacion() {
     ws["!cols"] = [
         { wch: 22 }, { wch: 28 }, { wch: 14 }, { wch: 8 }, { wch: 18 }, { wch: 12 },
         ...(mostrarAsesor ? [{ wch: 16 }] : []), { wch: 28 }, { wch: 36 },
+        { wch: 22 }, { wch: 10 }, { wch: 24 }, { wch: 18 },
     ];
 
     const wb = XLSX.utils.book_new();
@@ -1187,6 +1196,10 @@ function renderTable(datos, contenedor) {
           ${mostrarAsesor ? "<th>Asesor</th>" : ""}
           <th>Referencia</th>
           <th>Comentarios</th>
+          <th>Empresa</th>
+          <th>DNI</th>
+          <th>Correo</th>
+          <th>Programa</th>
           <th style="width:40px"></th>
         </tr>
       </thead>
@@ -1207,6 +1220,10 @@ function renderTable(datos, contenedor) {
         ${mostrarAsesor ? `<td style="color:var(--slate-500); font-size:0.82rem">${d.usuario || "—"}</td>` : ""}
         <td style="color:var(--slate-500); font-size:0.82rem; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${d.referencia || ""}">${d.referencia || "—"}</td>
         <td style="color:var(--slate-500); font-size:0.82rem; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${d.comentarios || ""}">${d.comentarios || "—"}</td>
+        <td style="color:var(--slate-500); font-size:0.82rem; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${d.empresa || ""}">${d.empresa || "—"}</td>
+        <td style="color:var(--slate-500); font-size:0.82rem">${d.dni || "—"}</td>
+        <td style="color:var(--slate-500); font-size:0.82rem; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${d.correo || ""}">${d.correo || "—"}</td>
+        <td style="color:var(--slate-500); font-size:0.82rem">${d.programa_interes || "—"}</td>
         <td class="td-edit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></td>
       </tr>`;
     });
@@ -1376,6 +1393,7 @@ function iniciarEncuesta() {
     const encuestaUrl = `${baseUrl}?u=${encodeURIComponent(usuario)}`;
 
     document.getElementById("encuesta-link-text").textContent = encuestaUrl;
+    cargarDatosEncuesta();
     const container = document.getElementById("qr-container");
 
     if (container.dataset.generatedFor === usuario) return;
@@ -1440,6 +1458,54 @@ function descargarQR() {
     link.download = `QR_Encuesta_${usuario}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
+}
+
+async function cargarDatosEncuesta() {
+    const usuario = leerSesion()?.usuario || "";
+    if (!usuario) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('usuarios')
+            .select('encuesta_empresa, encuesta_plan')
+            .eq('usuario', usuario)
+            .single();
+        if (error) throw error;
+        document.getElementById("encuesta-empresa-input").value = data?.encuesta_empresa || "";
+        document.getElementById("encuesta-plan-input").value = data?.encuesta_plan || "";
+    } catch (err) {
+        console.error("Error al cargar datos de campaña:", err);
+    }
+}
+
+async function guardarDatosEncuesta() {
+    const usuario = leerSesion()?.usuario || "";
+    const btn = document.getElementById("btn-guardar-campania");
+    const btnText = document.getElementById("btn-guardar-campania-text");
+    const msg = document.getElementById("msg-campania");
+
+    const empresa = document.getElementById("encuesta-empresa-input").value.trim();
+    const plan = document.getElementById("encuesta-plan-input").value.trim();
+
+    btn.disabled = true;
+    btnText.textContent = "Guardando...";
+    msg.textContent = "";
+
+    try {
+        const { error } = await supabaseClient
+            .from('usuarios')
+            .update({ encuesta_empresa: empresa, encuesta_plan: plan })
+            .eq('usuario', usuario);
+        if (error) throw error;
+
+        msg.textContent = "✅ Datos guardados. Ya se usarán en el mensaje de WhatsApp de tu encuesta.";
+        msg.style.color = "var(--green-600)";
+    } catch (err) {
+        msg.textContent = "❌ Error al guardar: " + err.message;
+        msg.style.color = "var(--red-500)";
+    } finally {
+        btn.disabled = false;
+        btnText.textContent = "Guardar";
+    }
 }
 
 
@@ -3366,13 +3432,19 @@ async function ejecutarCrearAsesor() {
     const nInput = document.getElementById("new-user-nombre");
     const aInput = document.getElementById("new-user-apellido");
     const eInput = document.getElementById("new-user-email");
+    const cInput = document.getElementById("new-user-celular");
 
     const nombre = nInput.value.trim();
     const apellido = aInput.value.trim();
     const emailReal = eInput.value.trim();
+    const celular = cInput.value.trim();
 
-    if (!nombre || !apellido || !emailReal) {
+    if (!nombre || !apellido || !emailReal || !celular) {
         return showTeamMessage("❌ Completa todos los campos.", "error");
+    }
+
+    if (!/^\d{9}$/.test(celular)) {
+        return showTeamMessage("❌ El celular debe tener exactamente 9 dígitos.", "error");
     }
 
     const usuarioAuto = (nombre + apellido).toLowerCase().replace(/\s/g, "");
@@ -3414,12 +3486,21 @@ async function ejecutarCrearAsesor() {
                     equipo: miEquipo,
                     rol: 'Asesor',
                     // 2. EL CAMBIO: Enviamos el mensaje en la metadata de Supabase
-                    mensaje_whatsapp: mensajeWaDefault
+                    mensaje_whatsapp: mensajeWaDefault,
+                    celular: celular
                 }
             }
         });
 
         if (error) throw error;
+
+        // Aseguramos que el celular quede guardado en la fila del nuevo asesor,
+        // por si el trigger de creación no mapea este campo desde la metadata.
+        try {
+            await supabaseClient.from('usuarios').update({ celular: celular }).eq('usuario', usuarioAuto);
+        } catch (errCelular) {
+            console.error("No se pudo confirmar el guardado del celular:", errCelular);
+        }
 
         // Texto plano para copiar al portapapeles
         const textoCopiar = `Hola *${nombre}!* Bienvenid@ a la familia *${miEquipo}*. Estamos listos para romperla juntos! 🔥
@@ -3437,6 +3518,7 @@ Entra, dale un vistazo y prepárate para el éxito. *¡Bienvenido@ al equipo gan
         nInput.value = "";
         aInput.value = "";
         eInput.value = "";
+        cInput.value = "";
         actualizarPreviews();
         cargarListaEquipo();
 
