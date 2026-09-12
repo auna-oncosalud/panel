@@ -485,6 +485,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) e.preventDefault();
         });
     });
+
+    const rucEl = document.getElementById("empresa-ruc-input");
+    if (rucEl) {
+        rucEl.addEventListener("input", () => { rucEl.value = rucEl.value.replace(/\D/g, "").slice(0, 11); });
+        rucEl.addEventListener("keydown", (e) => {
+            const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"];
+            if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) e.preventDefault();
+        });
+    }
 });
 function formatDecimalInput(input) {
     let val = input.value.replace(/,/g, '.'); // Replace comma with dot
@@ -527,6 +536,7 @@ function mostrarPantallaFormulario(user) {
     // Formulario: Saludo más humano y pequeño
     document.getElementById("form-title").textContent = `Hola, ${nombre}👋🏼. Registra tu Lead`;
 
+    cargarSelectEmpresasNuevoLead();
     iniciarSuscripcionTiempoReal();
 }
 
@@ -663,6 +673,7 @@ document.addEventListener("click", e => {
 function validateForm() {
     let valid = true;
     const fields = [
+        { id: "empresa", errId: "err-empresa", msg: "Selecciona una empresa", check: (v) => v !== "" && v !== "__add__" },
         { id: "nombre", errId: "err-nombre", msg: "Ingresa el nombre completo", check: (v) => v.trim().length >= 3 },
         { id: "telefono", errId: "err-telefono", msg: "El teléfono debe tener exactamente 9 dígitos", check: (v) => /^\d{9}$/.test(v.replace(/\s/g, "")) },
         { id: "edad", errId: "err-edad", msg: "Ingresa una edad válida (1–120)", check: (v) => /^\d+$/.test(v) && +v >= 1 && +v <= 120 },
@@ -685,11 +696,18 @@ function validateForm() {
     return valid;
 }
 
-["nombre", "telefono", "edad", "producto", "temperatura"].forEach((id) => {
+["empresa", "nombre", "telefono", "edad", "producto", "temperatura"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener("input", () => { el.classList.remove("invalid"); document.getElementById(`err-${id}`)?.textContent && (document.getElementById(`err-${id}`).textContent = ""); });
         el.addEventListener("change", () => { el.classList.remove("invalid"); });
+    }
+});
+
+document.getElementById("empresa")?.addEventListener("change", function () {
+    if (this.value === "__add__") {
+        this.value = "";
+        abrirModalEquipo();
     }
 });
 
@@ -723,6 +741,7 @@ document.getElementById("barrido-form").addEventListener("submit", async functio
         temperatura: String(document.getElementById("temperatura").value),
         referencia: String(document.getElementById("referencia").value.trim()),
         comentarios: String(document.getElementById("comentarios").value.trim()),
+        empresa: String(document.getElementById("empresa").value),
     };
 
     try {
@@ -738,7 +757,7 @@ document.getElementById("barrido-form").addEventListener("submit", async functio
         this.reset();
         showToast();
 
-        ["nombre", "telefono", "edad", "producto", "temperatura"].forEach((id) => {
+        ["empresa", "nombre", "telefono", "edad", "producto", "temperatura"].forEach((id) => {
             document.getElementById(id)?.classList.remove("invalid");
         });
 
@@ -1949,325 +1968,138 @@ function dibujarGrafica(diasOrdenados) {
 /* ══════════════════════════════════════════════
    COTIZADOR
 ══════════════════════════════════════════════ */
-const COT_LISTA_C1 = [
-    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 130.3, prom: 93.80 },
-    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: 154.72, prom: 111.38 },
-    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 172.63, prom: 124.28 },
-    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 192.19, prom: 138.36 },
-    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 254.08, prom: 182.91 },
-    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 298.02, prom: 214.55 },
-    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 387.61, prom: 279.03 },
-    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 464.15, prom: 334.14 },
-    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 234.3, prom: 140.56 },
-    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 279.58, prom: 167.71 },
-    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 311.89, prom: 187.1 },
-    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 347.46, prom: 208.45 },
-    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 457.36, prom: 274.37 },
-    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 538.16, prom: 322.85 },
-    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 630.3, prom: 378.12 },
-    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 678.77, prom: 407.19 },
-    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 707.17, prom: 494.95 },
-    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 858.24, prom: 600.68 },
-    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 983.6, prom: 688.42 },
-    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 1129.85, prom: 790.78 },
-    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1314.66, prom: 920.13 },
-    { plan: "Onco Pro", rango: [0, 17], reg: 43.91, prom: 26.34 },
-    { plan: "Onco Pro", rango: [18, 25], reg: 47.03, prom: 28.21 },
-    { plan: "Onco Pro", rango: [26, 26], reg: 78.92, prom: 43.40 },
-    { plan: "Onco Pro", rango: [27, 35], reg: 90.38, prom: 49.70 },
-    { plan: "Onco Pro", rango: [36, 40], reg: 92.26, prom: 50.74 },
-    { plan: "Onco Pro", rango: [41, 41], reg: 99.82, prom: 54.89 },
-    { plan: "Onco Pro", rango: [42, 43], reg: 102.7, prom: 56.47 },
-    { plan: "Onco Pro", rango: [44, 45], reg: 104.58, prom: 57.51 },
-    { plan: "Onco Pro", rango: [46, 46], reg: 112.29, prom: 61.75 },
-    { plan: "Onco Pro", rango: [47, 47], reg: 113.75, prom: 62.55 },
-    { plan: "Onco Pro", rango: [48, 48], reg: 115.04, prom: 63.26 },
-    { plan: "Onco Pro", rango: [49, 49], reg: 120.53, prom: 66.28 },
-    { plan: "Onco Pro", rango: [50, 50], reg: 130.1, prom: 71.54 },
-    { plan: "Onco Pro", rango: [51, 51], reg: 141.12, prom: 77.60 },
-    { plan: "Onco Pro", rango: [52, 52], reg: 156.85, prom: 86.25 },
-    { plan: "Onco Pro", rango: [53, 53], reg: 169.01, prom: 92.94 },
-    { plan: "Onco Pro", rango: [54, 54], reg: 176.41, prom: 97.01 },
-    { plan: "Onco Pro", rango: [55, 55], reg: 186.44, prom: 102.52 },
-    { plan: "Onco Pro", rango: [56, 56], reg: 192.19, prom: 105.68 },
-    { plan: "Onco Pro", rango: [57, 57], reg: 205.9, prom: 113.22 },
-    { plan: "Onco Pro", rango: [58, 58], reg: 215.63, prom: 118.58 },
-    { plan: "Onco Pro", rango: [59, 59], reg: 229.73, prom: 126.33 },
-    { plan: "Onco Pro", rango: [60, 60], reg: 243.13, prom: 133.69 },
-    { plan: "Onco Pro", rango: [61, 61], reg: 256.98, prom: 141.32 },
-    { plan: "Onco Plus", rango: [0, 17], reg: 53.58, prom: 32.14 },
-    { plan: "Onco Plus", rango: [18, 25], reg: 57.55, prom: 34.53 },
-    { plan: "Onco Plus", rango: [26, 26], reg: 131.72, prom: 72.44 },
-    { plan: "Onco Plus", rango: [27, 35], reg: 153.99, prom: 84.68 },
-    { plan: "Onco Plus", rango: [36, 36], reg: 160.49, prom: 88.25 },
-    { plan: "Onco Plus", rango: [37, 37], reg: 165.38, prom: 90.94 },
-    { plan: "Onco Plus", rango: [38, 38], reg: 166.97, prom: 91.82 },
-    { plan: "Onco Plus", rango: [39, 39], reg: 169.01, prom: 92.94 },
-    { plan: "Onco Plus", rango: [40, 40], reg: 171.3, prom: 94.20 },
-    { plan: "Onco Plus", rango: [41, 41], reg: 175.43, prom: 96.47 },
-    { plan: "Onco Plus", rango: [42, 42], reg: 178.48, prom: 98.14 },
-    { plan: "Onco Plus", rango: [43, 43], reg: 186, prom: 102.28 },
-    { plan: "Onco Plus", rango: [44, 44], reg: 188.52, prom: 103.66 },
-    { plan: "Onco Plus", rango: [45, 45], reg: 193.85, prom: 106.60 },
-    { plan: "Onco Plus", rango: [46, 46], reg: 201.98, prom: 111.07 },
-    { plan: "Onco Plus", rango: [47, 47], reg: 208.23, prom: 114.51 },
-    { plan: "Onco Plus", rango: [48, 48], reg: 215.93, prom: 118.74 },
-    { plan: "Onco Plus", rango: [49, 49], reg: 220.58, prom: 121.29 },
-    { plan: "Onco Plus", rango: [50, 50], reg: 234.15, prom: 128.76 },
-    { plan: "Onco Plus", rango: [51, 51], reg: 235.96, prom: 129.75 },
-    { plan: "Onco Plus", rango: [52, 52], reg: 243.14, prom: 133.71 },
-    { plan: "Onco Plus", rango: [53, 53], reg: 247.21, prom: 135.94 },
-    { plan: "Onco Plus", rango: [54, 54], reg: 250.51, prom: 137.75 },
-    { plan: "Onco Plus", rango: [55, 55], reg: 261.42, prom: 143.75 },
-    { plan: "Onco Plus", rango: [56, 56], reg: 276.39, prom: 151.98 },
-    { plan: "Onco Plus", rango: [57, 57], reg: 287.44, prom: 158.06 },
-    { plan: "Onco Plus", rango: [58, 58], reg: 306.17, prom: 168.36 },
-    { plan: "Onco Plus", rango: [59, 59], reg: 321.77, prom: 176.94 },
-    { plan: "Onco Plus", rango: [60, 60], reg: 337.16, prom: 185.40 },
+/* ══════════════════════════════════════════════
+   TARIFARIOS 2025 / 2026
+   reg = precio regular. prom = precio con descuento (solo Onco Plus
+   tiene descuento; los planes Auna no lo tienen, por eso no llevan "prom").
+   reg: null = sin datos disponibles para ese rango de edad.
+══════════════════════════════════════════════ */
+const COT_LISTA_2026 = [
+    { plan: "Onco Plus", rango: [0, 25], reg: 81.59, prom: 13.96 },
+    { plan: "Onco Plus", rango: [26, 30], reg: 178.13, prom: 41.51 },
+    { plan: "Onco Plus", rango: [31, 35], reg: 182.26, prom: 44.65 },
+    { plan: "Onco Plus", rango: [36, 40], reg: 236.56, prom: 52.03 },
+    { plan: "Onco Plus", rango: [41, 45], reg: 264.23, prom: 107.46 },
+    { plan: "Onco Plus", rango: [46, 50], reg: 309.86, prom: 134.90 },
+    { plan: "Onco Plus", rango: [51, 55], reg: 359.36, prom: 180.95 },
+    { plan: "Onco Plus", rango: [56, 60], reg: 442.17, prom: 275.73 },
+    { plan: "Onco Plus", rango: [61, 65], reg: 575.56, prom: 370.04 },
+    { plan: "Onco Plus", rango: [66, 70], reg: 739.10, prom: 479.38 },
+    { plan: "Onco Plus", rango: [71, 120], reg: 865.35, prom: 588.01 },
+
+    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 104.23 },
+    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: 123.78 },
+    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 138.11 },
+    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 153.75 },
+    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 203.27 },
+    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 238.41 },
+    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 310.08 },
+    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 371.32 },
+    { plan: "Plan Auna salud Classic", rango: [61, 65], reg: 416.93 },
+    { plan: "Plan Auna salud Classic", rango: [66, 70], reg: 476.86 },
+    { plan: "Plan Auna salud Classic", rango: [71, 75], reg: 548.55 },
+    { plan: "Plan Auna salud Classic", rango: [76, 80], reg: 637.13 },
+    { plan: "Plan Auna salud Classic", rango: [81, 120], reg: 746.57 },
+
+    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 170.40 },
+    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 203.34 },
+    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 226.82 },
+    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 252.72 },
+    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 332.63 },
+    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 391.39 },
+    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 458.37 },
+    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 493.64 },
+    { plan: "Plan Auna salud Premium", rango: [61, 65], reg: 505.38 },
+    { plan: "Plan Auna salud Premium", rango: [66, 70], reg: 605.32 },
+    { plan: "Plan Auna salud Premium", rango: [71, 75], reg: 693.47 },
+    { plan: "Plan Auna salud Premium", rango: [76, 80], reg: 787.48 },
+    { plan: "Plan Auna salud Premium", rango: [81, 120], reg: 883.89 },
+
+    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 610.73 },
+    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 741.22 },
+    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 849.47 },
+    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 975.80 },
+    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1135.40 },
+
+    { plan: "Plan Auna salud Padres", rango: [46, 50], reg: 398.99 },
+    { plan: "Plan Auna salud Padres", rango: [51, 55], reg: 467.28 },
+    { plan: "Plan Auna salud Padres", rango: [56, 60], reg: 503.23 },
+    { plan: "Plan Auna salud Padres", rango: [61, 65], reg: 610.73 },
+    { plan: "Plan Auna salud Padres", rango: [66, 70], reg: 741.22 },
+    { plan: "Plan Auna salud Padres", rango: [71, 75], reg: 849.47 },
+    { plan: "Plan Auna salud Padres", rango: [76, 80], reg: 975.80 },
+    { plan: "Plan Auna salud Padres", rango: [81, 120], reg: 1135.40 },
 ];
 
-const COT_LISTA_C2 = [
-    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 130.3, prom: 91.19 },
-    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: 154.72, prom: 108.29 },
-    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 172.63, prom: 120.83 },
-    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 192.19, prom: 134.51 },
-    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 254.08, prom: 177.83 },
-    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 298.02, prom: 208.59 },
-    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 387.61, prom: 271.28 },
-    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 464.15, prom: 324.87 },
-    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 234.3, prom: 128.84 },
-    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 279.58, prom: 153.74 },
-    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 311.89, prom: 171.50 },
-    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 347.46, prom: 191.07 },
-    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 457.36, prom: 251.51 },
-    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 538.16, prom: 295.93 },
-    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 630.3, prom: 346.60 },
-    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 678.77, prom: 373.26 },
-    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 707.17, prom: 459.60 },
-    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 858.24, prom: 557.77 },
-    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 983.6, prom: 639.24 },
-    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 1129.85, prom: 734.29 },
-    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1314.66, prom: 854.40 },
-    { plan: "Onco Pro", rango: [0, 17], reg: 43.91, prom: 26.34 },
-    { plan: "Onco Pro", rango: [18, 25], reg: 47.03, prom: 28.21 },
-    { plan: "Onco Pro", rango: [26, 26], reg: 78.92, prom: 43.40 },
-    { plan: "Onco Pro", rango: [27, 35], reg: 90.38, prom: 49.70 },
-    { plan: "Onco Pro", rango: [36, 40], reg: 92.26, prom: 50.74 },
-    { plan: "Onco Pro", rango: [41, 41], reg: 99.82, prom: 54.89 },
-    { plan: "Onco Pro", rango: [42, 43], reg: 102.7, prom: 56.47 },
-    { plan: "Onco Pro", rango: [44, 45], reg: 104.58, prom: 57.51 },
-    { plan: "Onco Pro", rango: [46, 46], reg: 112.29, prom: 61.75 },
-    { plan: "Onco Pro", rango: [47, 47], reg: 113.75, prom: 62.55 },
-    { plan: "Onco Pro", rango: [48, 48], reg: 115.04, prom: 63.26 },
-    { plan: "Onco Pro", rango: [49, 49], reg: 120.53, prom: 66.28 },
-    { plan: "Onco Pro", rango: [50, 50], reg: 130.1, prom: 71.54 },
-    { plan: "Onco Pro", rango: [51, 51], reg: 141.12, prom: 77.60 },
-    { plan: "Onco Pro", rango: [52, 52], reg: 156.85, prom: 86.25 },
-    { plan: "Onco Pro", rango: [53, 53], reg: 169.01, prom: 92.94 },
-    { plan: "Onco Pro", rango: [54, 54], reg: 176.41, prom: 97.01 },
-    { plan: "Onco Pro", rango: [55, 55], reg: 186.44, prom: 102.52 },
-    { plan: "Onco Pro", rango: [56, 56], reg: 192.19, prom: 105.68 },
-    { plan: "Onco Pro", rango: [57, 57], reg: 205.9, prom: 113.22 },
-    { plan: "Onco Pro", rango: [58, 58], reg: 215.63, prom: 118.58 },
-    { plan: "Onco Pro", rango: [59, 59], reg: 229.73, prom: 126.33 },
-    { plan: "Onco Pro", rango: [60, 60], reg: 243.13, prom: 133.69 },
-    { plan: "Onco Pro", rango: [61, 61], reg: 256.98, prom: 141.32 },
-    { plan: "Onco Plus", rango: [0, 17], reg: 53.58, prom: 32.14 },
-    { plan: "Onco Plus", rango: [18, 25], reg: 57.55, prom: 34.53 },
-    { plan: "Onco Plus", rango: [26, 26], reg: 131.72, prom: 72.44 },
-    { plan: "Onco Plus", rango: [27, 35], reg: 153.99, prom: 84.68 },
-    { plan: "Onco Plus", rango: [36, 36], reg: 160.49, prom: 88.25 },
-    { plan: "Onco Plus", rango: [37, 37], reg: 165.38, prom: 90.94 },
-    { plan: "Onco Plus", rango: [38, 38], reg: 166.97, prom: 91.82 },
-    { plan: "Onco Plus", rango: [39, 39], reg: 169.01, prom: 92.94 },
-    { plan: "Onco Plus", rango: [40, 40], reg: 171.3, prom: 94.20 },
-    { plan: "Onco Plus", rango: [41, 41], reg: 175.43, prom: 96.47 },
-    { plan: "Onco Plus", rango: [42, 42], reg: 178.48, prom: 98.14 },
-    { plan: "Onco Plus", rango: [43, 43], reg: 186, prom: 102.28 },
-    { plan: "Onco Plus", rango: [44, 44], reg: 188.52, prom: 103.66 },
-    { plan: "Onco Plus", rango: [45, 45], reg: 193.85, prom: 106.60 },
-    { plan: "Onco Plus", rango: [46, 46], reg: 201.98, prom: 111.07 },
-    { plan: "Onco Plus", rango: [47, 47], reg: 208.23, prom: 114.51 },
-    { plan: "Onco Plus", rango: [48, 48], reg: 215.93, prom: 118.74 },
-    { plan: "Onco Plus", rango: [49, 49], reg: 220.58, prom: 121.29 },
-    { plan: "Onco Plus", rango: [50, 50], reg: 234.15, prom: 128.76 },
-    { plan: "Onco Plus", rango: [51, 51], reg: 235.96, prom: 129.75 },
-    { plan: "Onco Plus", rango: [52, 52], reg: 243.14, prom: 133.71 },
-    { plan: "Onco Plus", rango: [53, 53], reg: 247.21, prom: 135.94 },
-    { plan: "Onco Plus", rango: [54, 54], reg: 250.51, prom: 137.75 },
-    { plan: "Onco Plus", rango: [55, 55], reg: 261.42, prom: 143.75 },
-    { plan: "Onco Plus", rango: [56, 56], reg: 276.39, prom: 151.98 },
-    { plan: "Onco Plus", rango: [57, 57], reg: 287.44, prom: 158.06 },
-    { plan: "Onco Plus", rango: [58, 58], reg: 306.17, prom: 168.36 },
-    { plan: "Onco Plus", rango: [59, 59], reg: 321.77, prom: 176.94 },
-    { plan: "Onco Plus", rango: [60, 60], reg: 337.16, prom: 185.40 },
+const COT_LISTA_2025 = [
+    { plan: "Onco Plus", rango: [0, 25], reg: 81.59, prom: 12.92 },
+    { plan: "Onco Plus", rango: [26, 30], reg: 178.13, prom: 38.43 },
+    { plan: "Onco Plus", rango: [31, 35], reg: 182.26, prom: 41.35 },
+    { plan: "Onco Plus", rango: [36, 40], reg: 236.56, prom: 48.17 },
+    { plan: "Onco Plus", rango: [41, 45], reg: 264.23, prom: 99.50 },
+    { plan: "Onco Plus", rango: [46, 50], reg: 309.86, prom: 124.90 },
+    { plan: "Onco Plus", rango: [51, 55], reg: 359.36, prom: 167.55 },
+    { plan: "Onco Plus", rango: [56, 60], reg: 442.17, prom: 255.30 },
+    { plan: "Onco Plus", rango: [61, 65], reg: 575.56, prom: 342.62 },
+    { plan: "Onco Plus", rango: [66, 70], reg: 739.10, prom: 443.87 },
+    { plan: "Onco Plus", rango: [71, 75], reg: 865.35, prom: 443.87 },
+    { plan: "Onco Plus", rango: [76, 80], reg: 949.14, prom: 544.45 },
+    { plan: "Onco Plus", rango: [81, 85], reg: 1026.45, prom: 544.45 },
+    { plan: "Onco Plus", rango: [86, 120], reg: 1086.85, prom: 544.45 },
+
+    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 101.20 },
+    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: null },
+    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 134.08 },
+    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 149.27 },
+    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 197.34 },
+    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 231.47 },
+    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 301.05 },
+    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 360.50 },
+    { plan: "Plan Auna salud Classic", rango: [61, 65], reg: 404.79 },
+    { plan: "Plan Auna salud Classic", rango: [66, 70], reg: 462.97 },
+    { plan: "Plan Auna salud Classic", rango: [71, 75], reg: 532.57 },
+    { plan: "Plan Auna salud Classic", rango: [76, 80], reg: 618.57 },
+    { plan: "Plan Auna salud Classic", rango: [81, 120], reg: 724.83 },
+
+    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 165.44 },
+    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 197.41 },
+    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 220.21 },
+    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 245.36 },
+    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 322.94 },
+    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 380.00 },
+    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 445.03 },
+    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 479.27 },
+    { plan: "Plan Auna salud Premium", rango: [61, 65], reg: 490.67 },
+    { plan: "Plan Auna salud Premium", rango: [66, 70], reg: 587.69 },
+    { plan: "Plan Auna salud Premium", rango: [71, 75], reg: 673.27 },
+    { plan: "Plan Auna salud Premium", rango: [76, 80], reg: 764.55 },
+    { plan: "Plan Auna salud Premium", rango: [81, 120], reg: 858.14 },
+
+    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 581.65 },
+    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 705.92 },
+    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 809.02 },
+    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 929.33 },
+    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1081.33 },
 ];
 
-const COT_LISTA_D1 = [
-    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 143.32, prom: 103.18 },
-    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: 170.19, prom: 122.52 },
-    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 189.90, prom: 136.70 },
-    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 211.41, prom: 152.20 },
-    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 279.48, prom: 201.20 },
-    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 327.83, prom: 236.00 },
-    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 426.37, prom: 306.94 },
-    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 510.57, prom: 367.56 },
-    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 257.74, prom: 154.62 },
-    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 307.53, prom: 184.49 },
-    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 343.07, prom: 205.80 },
-    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 382.21, prom: 229.29 },
-    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 503.09, prom: 301.81 },
-    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 591.98, prom: 355.13 },
-    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 693.33, prom: 415.93 },
-    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 746.65, prom: 447.92 },
-    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 777.89, prom: 544.45 },
-    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 944.06, prom: 660.74 },
-    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 1081.97, prom: 757.27 },
-    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 1242.84, prom: 869.86 },
-    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1446.13, prom: 1012.15 },
-    { plan: "Onco Pro", rango: [0, 17], reg: 52.69, prom: 31.61 },
-    { plan: "Onco Pro", rango: [18, 25], reg: 56.44, prom: 33.85 },
-    { plan: "Onco Pro", rango: [26, 26], reg: 94.71, prom: 52.07 },
-    { plan: "Onco Pro", rango: [27, 35], reg: 108.45, prom: 59.64 },
-    { plan: "Onco Pro", rango: [36, 40], reg: 110.72, prom: 60.89 },
-    { plan: "Onco Pro", rango: [41, 41], reg: 119.78, prom: 65.87 },
-    { plan: "Onco Pro", rango: [42, 43], reg: 123.24, prom: 67.77 },
-    { plan: "Onco Pro", rango: [44, 45], reg: 125.50, prom: 69.02 },
-    { plan: "Onco Pro", rango: [46, 46], reg: 134.74, prom: 74.09 },
-    { plan: "Onco Pro", rango: [47, 47], reg: 136.50, prom: 75.06 },
-    { plan: "Onco Pro", rango: [48, 48], reg: 138.05, prom: 75.91 },
-    { plan: "Onco Pro", rango: [49, 49], reg: 144.63, prom: 79.53 },
-    { plan: "Onco Pro", rango: [50, 50], reg: 156.11, prom: 85.85 },
-    { plan: "Onco Pro", rango: [51, 51], reg: 169.34, prom: 93.13 },
-    { plan: "Onco Pro", rango: [52, 52], reg: 188.21, prom: 103.50 },
-    { plan: "Onco Pro", rango: [53, 53], reg: 202.82, prom: 111.53 },
-    { plan: "Onco Pro", rango: [54, 54], reg: 211.69, prom: 116.41 },
-    { plan: "Onco Pro", rango: [55, 55], reg: 223.73, prom: 123.03 },
-    { plan: "Onco Pro", rango: [56, 56], reg: 230.62, prom: 126.81 },
-    { plan: "Onco Pro", rango: [57, 57], reg: 247.08, prom: 135.87 },
-    { plan: "Onco Pro", rango: [58, 58], reg: 258.76, prom: 142.30 },
-    { plan: "Onco Pro", rango: [59, 59], reg: 275.68, prom: 151.59 },
-    { plan: "Onco Pro", rango: [60, 60], reg: 291.76, prom: 160.43 },
-    { plan: "Onco Pro", rango: [61, 61], reg: 308.38, prom: 169.58 },
-    { plan: "Onco Plus", rango: [0, 17], reg: 64.3, prom: 38.57 },
-    { plan: "Onco Plus", rango: [18, 25], reg: 69.05, prom: 41.43 },
-    { plan: "Onco Plus", rango: [26, 26], reg: 158.07, prom: 86.92 },
-    { plan: "Onco Plus", rango: [27, 35], reg: 184.79, prom: 101.61 },
-    { plan: "Onco Plus", rango: [36, 36], reg: 192.59, prom: 105.91 },
-    { plan: "Onco Plus", rango: [37, 37], reg: 198.45, prom: 109.13 },
-    { plan: "Onco Plus", rango: [38, 38], reg: 200.36, prom: 110.18 },
-    { plan: "Onco Plus", rango: [39, 39], reg: 202.82, prom: 111.53 },
-    { plan: "Onco Plus", rango: [40, 40], reg: 205.56, prom: 113.03 },
-    { plan: "Onco Plus", rango: [41, 41], reg: 210.51, prom: 115.76 },
-    { plan: "Onco Plus", rango: [42, 42], reg: 214.17, prom: 117.78 },
-    { plan: "Onco Plus", rango: [43, 43], reg: 223.21, prom: 122.74 },
-    { plan: "Onco Plus", rango: [44, 44], reg: 226.22, prom: 124.40 },
-    { plan: "Onco Plus", rango: [45, 45], reg: 232.63, prom: 127.92 },
-    { plan: "Onco Plus", rango: [46, 46], reg: 242.37, prom: 133.28 },
-    { plan: "Onco Plus", rango: [47, 47], reg: 249.88, prom: 137.41 },
-    { plan: "Onco Plus", rango: [48, 48], reg: 259.12, prom: 142.49 },
-    { plan: "Onco Plus", rango: [49, 49], reg: 264.7, prom: 145.55 },
-    { plan: "Onco Plus", rango: [50, 50], reg: 280.98, prom: 154.51 },
-    { plan: "Onco Plus", rango: [51, 51], reg: 283.15, prom: 155.70 },
-    { plan: "Onco Plus", rango: [52, 52], reg: 291.77, prom: 160.44 },
-    { plan: "Onco Plus", rango: [53, 53], reg: 296.65, prom: 163.12 },
-    { plan: "Onco Plus", rango: [54, 54], reg: 300.62, prom: 165.31 },
-    { plan: "Onco Plus", rango: [55, 55], reg: 313.7, prom: 172.50 },
-    { plan: "Onco Plus", rango: [56, 56], reg: 331.67, prom: 182.39 },
-    { plan: "Onco Plus", rango: [57, 57], reg: 344.93, prom: 189.67 },
-    { plan: "Onco Plus", rango: [58, 58], reg: 367.4, prom: 202.04 },
-    { plan: "Onco Plus", rango: [59, 59], reg: 386.13, prom: 212.33 },
-    { plan: "Onco Plus", rango: [60, 60], reg: 404.6, prom: 222.49 },
-];
-const COT_LISTA_D2 = [
-    { plan: "Plan Auna salud Classic", rango: [0, 17], reg: 143.32, prom: 100.31 },
-    { plan: "Plan Auna salud Classic", rango: [18, 25], reg: 170.19, prom: 119.12 },
-    { plan: "Plan Auna salud Classic", rango: [26, 35], reg: 189.90, prom: 132.90 },
-    { plan: "Plan Auna salud Classic", rango: [36, 40], reg: 211.41, prom: 147.96 },
-    { plan: "Plan Auna salud Classic", rango: [41, 45], reg: 279.48, prom: 195.61 },
-    { plan: "Plan Auna salud Classic", rango: [46, 50], reg: 327.83, prom: 229.45 },
-    { plan: "Plan Auna salud Classic", rango: [51, 55], reg: 426.37, prom: 298.41 },
-    { plan: "Plan Auna salud Classic", rango: [56, 60], reg: 510.57, prom: 357.35 },
-    { plan: "Plan Auna salud Premium", rango: [0, 17], reg: 257.74, prom: 141.73 },
-    { plan: "Plan Auna salud Premium", rango: [18, 25], reg: 307.53, prom: 169.11 },
-    { plan: "Plan Auna salud Premium", rango: [26, 35], reg: 343.07, prom: 188.66 },
-    { plan: "Plan Auna salud Premium", rango: [36, 40], reg: 382.21, prom: 210.18 },
-    { plan: "Plan Auna salud Premium", rango: [41, 45], reg: 503.09, prom: 276.65 },
-    { plan: "Plan Auna salud Premium", rango: [46, 50], reg: 591.98, prom: 325.53 },
-    { plan: "Plan Auna salud Premium", rango: [51, 55], reg: 693.33, prom: 381.26 },
-    { plan: "Plan Auna salud Premium", rango: [56, 60], reg: 746.65, prom: 410.58 },
-    { plan: "Plan Auna salud Senior", rango: [61, 65], reg: 777.89, prom: 505.55 },
-    { plan: "Plan Auna salud Senior", rango: [66, 70], reg: 944.06, prom: 613.54 },
-    { plan: "Plan Auna salud Senior", rango: [71, 75], reg: 1081.97, prom: 703.17 },
-    { plan: "Plan Auna salud Senior", rango: [76, 80], reg: 1242.84, prom: 807.72 },
-    { plan: "Plan Auna salud Senior", rango: [81, 120], reg: 1446.13, prom: 939.83 },
-    { plan: "Onco Pro", rango: [0, 17], reg: 52.69, prom: 31.61 },
-    { plan: "Onco Pro", rango: [18, 25], reg: 56.44, prom: 33.85 },
-    { plan: "Onco Pro", rango: [26, 26], reg: 94.71, prom: 52.07 },
-    { plan: "Onco Pro", rango: [27, 35], reg: 108.45, prom: 59.64 },
-    { plan: "Onco Pro", rango: [36, 40], reg: 110.72, prom: 60.89 },
-    { plan: "Onco Pro", rango: [41, 41], reg: 119.78, prom: 65.87 },
-    { plan: "Onco Pro", rango: [42, 43], reg: 123.24, prom: 67.77 },
-    { plan: "Onco Pro", rango: [44, 45], reg: 125.50, prom: 69.02 },
-    { plan: "Onco Pro", rango: [46, 46], reg: 134.74, prom: 74.09 },
-    { plan: "Onco Pro", rango: [47, 47], reg: 136.50, prom: 75.06 },
-    { plan: "Onco Pro", rango: [48, 48], reg: 138.05, prom: 75.91 },
-    { plan: "Onco Pro", rango: [49, 49], reg: 144.63, prom: 79.53 },
-    { plan: "Onco Pro", rango: [50, 50], reg: 156.11, prom: 85.85 },
-    { plan: "Onco Pro", rango: [51, 51], reg: 169.34, prom: 93.13 },
-    { plan: "Onco Pro", rango: [52, 52], reg: 188.21, prom: 103.50 },
-    { plan: "Onco Pro", rango: [53, 53], reg: 202.82, prom: 111.53 },
-    { plan: "Onco Pro", rango: [54, 54], reg: 211.69, prom: 116.41 },
-    { plan: "Onco Pro", rango: [55, 55], reg: 223.73, prom: 123.03 },
-    { plan: "Onco Pro", rango: [56, 56], reg: 230.62, prom: 126.81 },
-    { plan: "Onco Pro", rango: [57, 57], reg: 247.08, prom: 135.87 },
-    { plan: "Onco Pro", rango: [58, 58], reg: 258.76, prom: 142.30 },
-    { plan: "Onco Pro", rango: [59, 59], reg: 275.68, prom: 151.59 },
-    { plan: "Onco Pro", rango: [60, 60], reg: 291.76, prom: 160.43 },
-    { plan: "Onco Pro", rango: [61, 61], reg: 308.38, prom: 169.58 },
-    { plan: "Onco Plus", rango: [0, 17], reg: 64.3, prom: 38.57 },
-    { plan: "Onco Plus", rango: [18, 25], reg: 69.05, prom: 41.43 },
-    { plan: "Onco Plus", rango: [26, 26], reg: 158.07, prom: 86.92 },
-    { plan: "Onco Plus", rango: [27, 35], reg: 184.79, prom: 101.61 },
-    { plan: "Onco Plus", rango: [36, 36], reg: 192.59, prom: 105.91 },
-    { plan: "Onco Plus", rango: [37, 37], reg: 198.45, prom: 109.13 },
-    { plan: "Onco Plus", rango: [38, 38], reg: 200.36, prom: 110.18 },
-    { plan: "Onco Plus", rango: [39, 39], reg: 202.82, prom: 111.53 },
-    { plan: "Onco Plus", rango: [40, 40], reg: 205.56, prom: 113.03 },
-    { plan: "Onco Plus", rango: [41, 41], reg: 210.51, prom: 115.76 },
-    { plan: "Onco Plus", rango: [42, 42], reg: 214.17, prom: 117.78 },
-    { plan: "Onco Plus", rango: [43, 43], reg: 223.21, prom: 122.74 },
-    { plan: "Onco Plus", rango: [44, 44], reg: 226.22, prom: 124.40 },
-    { plan: "Onco Plus", rango: [45, 45], reg: 232.63, prom: 127.92 },
-    { plan: "Onco Plus", rango: [46, 46], reg: 242.37, prom: 133.28 },
-    { plan: "Onco Plus", rango: [47, 47], reg: 249.88, prom: 137.41 },
-    { plan: "Onco Plus", rango: [48, 48], reg: 259.12, prom: 142.49 },
-    { plan: "Onco Plus", rango: [49, 49], reg: 264.7, prom: 145.55 },
-    { plan: "Onco Plus", rango: [50, 50], reg: 280.98, prom: 154.51 },
-    { plan: "Onco Plus", rango: [51, 51], reg: 283.15, prom: 155.70 },
-    { plan: "Onco Plus", rango: [52, 52], reg: 291.77, prom: 160.44 },
-    { plan: "Onco Plus", rango: [53, 53], reg: 296.65, prom: 163.12 },
-    { plan: "Onco Plus", rango: [54, 54], reg: 300.62, prom: 165.31 },
-    { plan: "Onco Plus", rango: [55, 55], reg: 313.7, prom: 172.50 },
-    { plan: "Onco Plus", rango: [56, 56], reg: 331.67, prom: 182.39 },
-    { plan: "Onco Plus", rango: [57, 57], reg: 344.93, prom: 189.67 },
-    { plan: "Onco Plus", rango: [58, 58], reg: 367.4, prom: 202.04 },
-    { plan: "Onco Plus", rango: [59, 59], reg: 386.13, prom: 212.33 },
-    { plan: "Onco Plus", rango: [60, 60], reg: 404.6, prom: 222.49 },
-];
+/* Metadatos por plan: si tiene descuento, rango de edad válido, y si
+   solo existe para un año específico (Plan Padres solo tiene 2026). */
+const COT_PLANES_INFO = {
+    "Onco Plus": { esOnco: true, tieneDescuento: true, minEdad: 0, maxEdad: 120 },
+    "Plan Auna salud Classic": { esOnco: false, tieneDescuento: false, minEdad: 0, maxEdad: 120 },
+    "Plan Auna salud Premium": { esOnco: false, tieneDescuento: false, minEdad: 0, maxEdad: 120 },
+    "Plan Auna salud Senior": { esOnco: false, tieneDescuento: false, minEdad: 61, maxEdad: 120 },
+    "Plan Auna salud Padres": { esOnco: false, tieneDescuento: false, minEdad: 46, maxEdad: 120, soloAnio: 2026 },
+};
 
 function cot_getTarifario() {
-    if (cot_modoPago === "credito") {
-        return cot_currentInt === 1 ? COT_LISTA_C1 : COT_LISTA_C2;
-    } else {
-        return cot_currentInt === 1 ? COT_LISTA_D1 : COT_LISTA_D2;
-    }
+    return cot_anio === 2025 ? COT_LISTA_2025 : COT_LISTA_2026;
 }
 
 let cot_modoPanel = "asesor";
 let cot_currentInt = 1;
 let cot_modoActuarial = false;
-let cot_modoPago = "credito";
+let cot_anio = 2026;
 let cot_initialised = false;
 
 function cot_init() {
@@ -2275,6 +2107,9 @@ function cot_init() {
     cot_initialised = true;
     const hoy = new Date().toISOString().split("T")[0];
     document.getElementById("cot_fechaLimite").value = hoy;
+    cot_aplicarRestriccionAnioPorPlan();
+    cot_actualizarTemaMarca();
+    cot_actualizarBotonesDescarga();
     cot_renderizarCampos();
     cot_ajustarEscala();
     window.addEventListener("resize", cot_ajustarEscala);
@@ -2335,23 +2170,37 @@ function cot_toggleActuarial() {
     cot_renderizarCampos();
 }
 
-function cot_togglePago() {
-    cot_modoPago = cot_modoPago === "credito" ? "debito" : "credito";
-    const btn = document.getElementById("cot_btnPago");
-    const status = document.getElementById("cot_pago-status");
-    if (cot_modoPago === "debito") {
-        btn.classList.add("active");
-        status.textContent = "Débito";
-        status.classList.remove("cot-status-off");
-        status.classList.add("cot-status-on");
-    } else {
-        btn.classList.remove("active");
-        status.textContent = "Crédito";
-        status.classList.remove("cot-status-on");
-        status.classList.add("cot-status-off");
+function cot_seleccionarAnio(valor) {
+    const anio = parseInt(valor, 10);
+    const plan = document.getElementById("cot_planGlobal")?.value;
+    const info = COT_PLANES_INFO[plan] || {};
+
+    if (info.soloAnio && anio !== info.soloAnio) {
+        // El plan elegido (ej. Padres) solo existe para un año: no dejamos
+        // que el desplegable de año se salga de ese único año válido.
+        document.getElementById("cot_anioGlobal").value = String(info.soloAnio);
+        return;
     }
-    // Recalcular precios con la nueva lista
+
+    cot_anio = anio;
     cot_actualizarTodoPorPlan();
+}
+
+function cot_aplicarRestriccionAnioPorPlan() {
+    const plan = document.getElementById("cot_planGlobal")?.value;
+    const info = COT_PLANES_INFO[plan] || {};
+    const selAnio = document.getElementById("cot_anioGlobal");
+    if (!selAnio) return;
+
+    Array.from(selAnio.options).forEach(opt => {
+        const esValido = !info.soloAnio || parseInt(opt.value, 10) === info.soloAnio;
+        opt.disabled = !esValido;
+    });
+
+    if (info.soloAnio && cot_anio !== info.soloAnio) {
+        cot_anio = info.soloAnio;
+        selAnio.value = String(info.soloAnio);
+    }
 }
 
 function cot_toggleMenuModo() {
@@ -2454,6 +2303,7 @@ function cot_renderizarCampos() {
 
 function cot_autocompletarPrecios(id) {
     const plan = document.getElementById("cot_planGlobal").value;
+    const info = COT_PLANES_INFO[plan] || {};
     const regEl = document.getElementById("cot_reg-" + id);
     const promEl = document.getElementById("cot_prom-" + id);
     const errorEl = document.getElementById("cot_error-" + id);
@@ -2474,17 +2324,21 @@ function cot_autocompletarPrecios(id) {
         if (isNaN(edad)) { regEl.value = "0.00"; promEl.value = "0.00"; cot_actualizarPreview(); return; }
     }
 
+    const minEdad = info.minEdad ?? 0;
+    const maxEdad = info.maxEdad ?? 120;
     let valid = true;
-    if (plan === "Plan Auna salud Senior") {
-        if (edad <= 60) { errorEl.textContent = "Mínimo 61 años"; valid = false; }
-    } else {
-        if (edad > 60) { errorEl.textContent = "Máximo 60 años"; valid = false; }
-    }
+    if (edad < minEdad) { errorEl.textContent = `Mínimo ${minEdad} años`; valid = false; }
+    else if (edad > maxEdad) { errorEl.textContent = `Máximo ${maxEdad} años`; valid = false; }
 
     if (valid) {
         const match = cot_getTarifario().find(t => t.plan === plan && edad >= t.rango[0] && edad <= t.rango[1]);
-        regEl.value = match ? match.reg.toFixed(2) : "0.00";
-        promEl.value = match ? match.prom.toFixed(2) : "0.00";
+        if (!match || match.reg === null || match.reg === undefined) {
+            regEl.value = "Sin datos";
+            promEl.value = "Sin datos";
+        } else {
+            regEl.value = match.reg.toFixed(2);
+            promEl.value = (info.tieneDescuento && match.prom != null) ? match.prom.toFixed(2) : match.reg.toFixed(2);
+        }
     } else {
         regEl.value = "0.00"; promEl.value = "0.00";
     }
@@ -2492,7 +2346,37 @@ function cot_autocompletarPrecios(id) {
 }
 
 function cot_actualizarTodoPorPlan() {
+    cot_aplicarRestriccionAnioPorPlan();
+    cot_actualizarTemaMarca();
+    cot_actualizarBotonesDescarga();
     for (let i = 1; i <= cot_currentInt; i++) cot_autocompletarPrecios(i);
+}
+
+function cot_actualizarBotonesDescarga() {
+    const plan = document.getElementById("cot_planGlobal")?.value;
+    const info = COT_PLANES_INFO[plan] || {};
+    const btnConDescuento = document.getElementById("cot_btn-con-descuento");
+    const btnSinDescuento = document.getElementById("cot_btn-sin-descuento");
+    if (!btnConDescuento || !btnSinDescuento) return;
+
+    btnConDescuento.style.display = info.tieneDescuento ? "flex" : "none";
+    btnSinDescuento.textContent = info.tieneDescuento ? "Descargar Sin Descuento" : "Descargar Cotización";
+}
+
+function cot_actualizarTemaMarca() {
+    const plan = document.getElementById("cot_planGlobal")?.value;
+    const info = COT_PLANES_INFO[plan] || {};
+    const card = document.getElementById("cot_cotizacion-final");
+    const logo = document.querySelector(".cot-logo");
+    if (!card || !logo) return;
+
+    const ONCO_LOGO = "https://res.cloudinary.com/dwxiuavqd/image/upload/v1781733522/oncosalud-37375_kuuup0.png";
+    const AUNA_LOGO = "https://res.cloudinary.com/dwxiuavqd/image/upload/v1778164946/AUNA_1_cfdhdt_equgtw.png";
+
+    card.classList.toggle("tema-onco", !!info.esOnco);
+    card.classList.toggle("tema-auna", !info.esOnco);
+    logo.src = info.esOnco ? ONCO_LOGO : AUNA_LOGO;
+    logo.alt = info.esOnco ? "Oncosalud" : "Auna";
 }
 
 function cot_formatearFecha(str) {
@@ -2546,6 +2430,9 @@ function cot_actualizarPreview() {
     const esCliente = cot_modoPanel === "cliente";
     const planEl = document.getElementById("cot_planGlobal");
     if (!planEl) return;
+    const info = COT_PLANES_INFO[planEl.value] || {};
+    const mostrarDescuento = !esCliente && !!info.tieneDescuento;
+
     document.getElementById("cot_prev-plan").textContent = planEl.value;
 
     const fechaStr = document.getElementById("cot_fechaLimite").value;
@@ -2560,10 +2447,11 @@ function cot_actualizarPreview() {
         areaBenef.classList.add("hidden");
     }
 
-    document.getElementById("cot_bloque-descuento").classList.toggle("hidden", esCliente);
-    document.getElementById("cot_bloque-regular").classList.toggle("hidden", !esCliente);
+    document.getElementById("cot_bloque-descuento").classList.toggle("hidden", !mostrarDescuento);
+    document.getElementById("cot_bloque-regular").classList.toggle("hidden", mostrarDescuento);
 
     let tR = 0, tP = 0;
+    let hayDatosFaltantes = false;
     const lista = document.getElementById("cot_lista-detallada");
     lista.innerHTML = "";
 
@@ -2577,12 +2465,18 @@ function cot_actualizarPreview() {
             const e = document.getElementById("cot_edad-" + i)?.value || "?";
             etiquetaEdad = e + " años";
         }
-        const r = parseFloat(document.getElementById("cot_reg-" + i)?.value || 0);
-        const p = parseFloat(document.getElementById("cot_prom-" + i)?.value || 0);
+        const rRaw = document.getElementById("cot_reg-" + i)?.value || "0";
+        const pRaw = document.getElementById("cot_prom-" + i)?.value || "0";
+        const sinDatos = rRaw === "Sin datos";
+        if (sinDatos) hayDatosFaltantes = true;
+        const r = sinDatos ? 0 : (parseFloat(rRaw) || 0);
+        const p = sinDatos ? 0 : (parseFloat(pRaw) || 0);
         tR += r; tP += p;
 
         let html = '<div class="cot-lista-item"><span class="cot-lista-name">Integrante ' + i + ' (' + etiquetaEdad + ')</span><div class="cot-lista-price-wrap">';
-        if (esCliente) {
+        if (sinDatos) {
+            html += '<span class="cot-lista-reg-only" style="color:var(--red-500)">Sin datos</span>';
+        } else if (!mostrarDescuento) {
             html += '<span class="cot-lista-reg-only"><span class="cot-symbol">S/</span>' + r.toFixed(2) + '</span>';
         } else {
             html += '<span class="cot-lista-reg-through block"><span class="cot-symbol">S/</span>' + r.toFixed(2) + '</span>'
@@ -2592,9 +2486,15 @@ function cot_actualizarPreview() {
         lista.innerHTML += html;
     }
 
-    document.getElementById("cot_total-reg").innerHTML = '<span class="cot-symbol">S/</span>' + tR.toFixed(2);
-    document.getElementById("cot_total-promo").innerHTML = '<span class="cot-symbol">S/</span>' + tP.toFixed(2);
-    document.getElementById("cot_total-solo-reg").innerHTML = '<span class="cot-symbol">S/</span>' + tR.toFixed(2);
+    if (hayDatosFaltantes) {
+        document.getElementById("cot_total-reg").textContent = "Sin datos";
+        document.getElementById("cot_total-promo").textContent = "Sin datos";
+        document.getElementById("cot_total-solo-reg").textContent = "Sin datos";
+    } else {
+        document.getElementById("cot_total-reg").innerHTML = '<span class="cot-symbol">S/</span>' + tR.toFixed(2);
+        document.getElementById("cot_total-promo").innerHTML = '<span class="cot-symbol">S/</span>' + tP.toFixed(2);
+        document.getElementById("cot_total-solo-reg").innerHTML = '<span class="cot-symbol">S/</span>' + tR.toFixed(2);
+    }
 
     // Actualizar previsualización del contratante
     cot_actualizarContratante();
@@ -3247,23 +3147,32 @@ function proy_toggleAsesor(usuarioId) {
 }
 
 /* ══════════════════════════════════════════════
-   GESTIÓN DE EQUIPO (ADMINISTRADORES)
+   GESTIÓN DE EQUIPO (ADMINISTRADORES) + EMPRESAS
 ══════════════════════════════════════════════ */
 async function abrirModalEquipo() {
     const sesion = leerSesion();
-    if (sesion?.rol !== "Administrador") {
-        alert("Esta función es exclusiva para Supervisores/Administradores.");
-        return;
-    }
+    const esAdmin = sesion?.rol === "Administrador";
 
     const msgContainer = document.getElementById("team-msg-container");
     if (msgContainer) msgContainer.style.display = "none";
 
-    document.getElementById("new-user-nombre").value = "";
-    document.getElementById("new-user-apellido").value = "";
-    document.getElementById("new-user-email").value = "";
-    document.getElementById("preview-user").textContent = "...";
-    document.getElementById("preview-pass").textContent = "...";
+    document.getElementById("team-top-tabs").style.display = esAdmin ? "flex" : "none";
+    document.getElementById("team-modal-title").textContent = esAdmin ? "Gestión de Equipo" : "Mis Empresas";
+    document.getElementById("team-subtitle").textContent = esAdmin
+        ? "Administra tu equipo y tus empresas"
+        : "Registra las empresas con las que trabajas";
+
+    if (esAdmin) {
+        document.getElementById("new-user-nombre").value = "";
+        document.getElementById("new-user-apellido").value = "";
+        document.getElementById("new-user-email").value = "";
+        document.getElementById("new-user-celular").value = "";
+        document.getElementById("preview-user").textContent = "...";
+        document.getElementById("preview-pass").textContent = "...";
+    }
+
+    cancelarEdicionEmpresa();
+    switchTeamSection('empresas');
 
     const overlay = document.getElementById("team-modal-overlay");
     overlay.style.display = "flex";
@@ -3271,8 +3180,219 @@ async function abrirModalEquipo() {
     overlay.classList.add("active");
     document.body.style.overflow = "hidden";
 
-    switchTeamTab('crear');
-    cargarListaEquipo();
+    cargarListaEmpresas();
+}
+
+function switchTeamSection(section) {
+    const isEmpresas = section === 'empresas';
+    document.getElementById("team-top-empresas").style.display = isEmpresas ? "block" : "none";
+    document.getElementById("team-top-usuarios").style.display = isEmpresas ? "none" : "block";
+    document.getElementById("top-tab-empresas")?.classList.toggle("active", isEmpresas);
+    document.getElementById("top-tab-usuarios")?.classList.toggle("active", !isEmpresas);
+
+    const msgContainer = document.getElementById("team-msg-container");
+    if (msgContainer) msgContainer.style.display = "none";
+
+    if (isEmpresas) {
+        document.getElementById("team-subtitle").textContent = "Registra las empresas con las que trabajas";
+    } else {
+        switchTeamTab('crear');
+        cargarListaEquipo();
+    }
+}
+
+/* ─── Empresas (CRUD por asesor) ─── */
+let empresaEditandoId = null;
+let _empresasCache = [];
+
+async function cargarListaEmpresas() {
+    const contenedor = document.getElementById("empresas-list");
+    contenedor.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:20px; color:var(--slate-400);">
+            <div class="spinner-mini" style="border-top-color:var(--blue-500); border-width:2px; width:24px; height:24px;"></div>
+            <span style="font-size:0.8rem; font-weight:600;">Cargando empresas...</span>
+        </div>`;
+
+    const usuario = leerSesion()?.usuario || "";
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('empresas')
+            .select('id, nombre, ruc')
+            .eq('usuario', usuario)
+            .order('nombre', { ascending: true });
+
+        if (error) throw error;
+        _empresasCache = data || [];
+
+        if (_empresasCache.length === 0) {
+            contenedor.innerHTML = `
+                <div style="text-align:center; padding:30px 10px; color:var(--slate-400);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px; height:40px; margin-bottom:10px; opacity:0.5;">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                    <p style="font-size:0.85rem; font-weight:500;">Aún no has registrado empresas.</p>
+                </div>`;
+            return;
+        }
+
+        let html = "";
+        _empresasCache.forEach(emp => {
+            html += `
+            <div class="team-member-card">
+                <div class="member-avatar">${(emp.nombre || "?").charAt(0).toUpperCase()}</div>
+                <div class="member-info">
+                    <h4 style="text-transform:none;">${emp.nombre}</h4>
+                    <span>RUC: ${emp.ruc || "—"}</span>
+                </div>
+                <button onclick="editarEmpresa('${emp.id}')" class="member-delete-btn"
+                    style="background:var(--blue-100); color:var(--blue-600);" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+                <button onclick="eliminarEmpresa('${emp.id}')" class="member-delete-btn" title="Eliminar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6h14zM8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                </button>
+            </div>`;
+        });
+        contenedor.innerHTML = html;
+
+    } catch (err) {
+        contenedor.innerHTML = `<p style="color:var(--red-600); text-align:center; padding:20px; font-size:0.8rem;">⚠️ Error al cargar las empresas.</p>`;
+    }
+}
+
+async function guardarEmpresa() {
+    const nombreInput = document.getElementById("empresa-nombre-input");
+    const rucInput = document.getElementById("empresa-ruc-input");
+    const btn = document.getElementById("btn-guardar-empresa");
+
+    const nombre = nombreInput.value.trim();
+    const ruc = rucInput.value.trim();
+
+    if (!nombre) return showTeamMessage("❌ Ingresa el nombre de la empresa.", "error");
+    if (ruc && !/^\d{11}$/.test(ruc)) return showTeamMessage("❌ El RUC debe tener exactamente 11 dígitos.", "error");
+
+    const usuario = leerSesion()?.usuario || "";
+    btn.disabled = true;
+    btn.querySelector(".btn-text").style.display = "none";
+    btn.querySelector(".btn-loader").style.display = "flex";
+
+    try {
+        if (empresaEditandoId) {
+            const { error } = await supabaseClient
+                .from('empresas')
+                .update({ nombre, ruc })
+                .eq('id', empresaEditandoId);
+            if (error) throw error;
+            showTeamMessage("✅ Empresa actualizada.", "success");
+        } else {
+            const { error } = await supabaseClient
+                .from('empresas')
+                .insert([{ usuario, nombre, ruc }]);
+            if (error) throw error;
+            showTeamMessage("✅ Empresa agregada.", "success");
+        }
+
+        cancelarEdicionEmpresa();
+        cargarListaEmpresas();
+        cargarSelectEmpresasNuevoLead();
+
+    } catch (err) {
+        showTeamMessage("❌ Error: " + err.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.querySelector(".btn-text").style.display = "flex";
+        btn.querySelector(".btn-loader").style.display = "none";
+    }
+}
+
+function editarEmpresa(id) {
+    const emp = _empresasCache.find(e => String(e.id) === String(id));
+    if (!emp) return;
+
+    empresaEditandoId = emp.id;
+    document.getElementById("empresa-nombre-input").value = emp.nombre || "";
+    document.getElementById("empresa-ruc-input").value = emp.ruc || "";
+    document.getElementById("btn-guardar-empresa").querySelector(".btn-text").innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;">
+            <path d="M20 6 9 17l-5-5"/>
+        </svg>
+        Guardar Cambios`;
+    document.getElementById("btn-cancelar-empresa").style.display = "inline-flex";
+    document.getElementById("empresa-nombre-input").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function cancelarEdicionEmpresa() {
+    empresaEditandoId = null;
+    const nombreInput = document.getElementById("empresa-nombre-input");
+    const rucInput = document.getElementById("empresa-ruc-input");
+    if (nombreInput) nombreInput.value = "";
+    if (rucInput) rucInput.value = "";
+
+    const btnGuardar = document.getElementById("btn-guardar-empresa");
+    if (btnGuardar) {
+        btnGuardar.querySelector(".btn-text").innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Agregar Empresa`;
+    }
+    const btnCancelar = document.getElementById("btn-cancelar-empresa");
+    if (btnCancelar) btnCancelar.style.display = "none";
+}
+
+async function eliminarEmpresa(id) {
+    const emp = _empresasCache.find(e => String(e.id) === String(id));
+    if (!confirm(`¿Eliminar la empresa "${emp?.nombre || ''}"? Esta acción no se puede deshacer.`)) return;
+
+    try {
+        const { error } = await supabaseClient.from('empresas').delete().eq('id', id);
+        if (error) throw error;
+        showTeamMessage("Empresa eliminada.", "success");
+        if (String(empresaEditandoId) === String(id)) cancelarEdicionEmpresa();
+        cargarListaEmpresas();
+        cargarSelectEmpresasNuevoLead();
+    } catch (err) {
+        showTeamMessage("No se pudo eliminar: " + err.message, "error");
+    }
+}
+
+async function cargarSelectEmpresasNuevoLead() {
+    const sel = document.getElementById("empresa");
+    if (!sel) return;
+    const usuario = leerSesion()?.usuario || "";
+    const valorPrevio = sel.value;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('empresas')
+            .select('nombre')
+            .eq('usuario', usuario)
+            .order('nombre', { ascending: true });
+        if (error) throw error;
+
+        sel.innerHTML = `
+            <option value="" disabled ${valorPrevio ? "" : "selected"}>Selecciona una empresa</option>
+            <option value="__add__">➕ Agregar empresa</option>`;
+
+        (data || []).forEach(emp => {
+            const opt = document.createElement("option");
+            opt.value = emp.nombre;
+            opt.textContent = emp.nombre;
+            sel.appendChild(opt);
+        });
+
+        if (valorPrevio && valorPrevio !== "__add__" && [...sel.options].some(o => o.value === valorPrevio)) {
+            sel.value = valorPrevio;
+        }
+    } catch (err) {
+        console.error("Error al cargar empresas del asesor:", err);
+    }
 }
 
 function closeTeamModal(e) {
