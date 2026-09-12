@@ -337,7 +337,7 @@
 
             try {
                 const { error } = await clienteSupabase.auth.resetPasswordForEmail(emailInput, {
-                    redirectTo: 'https://auna-oncosalud.github.io/pruebas/recuperar.html'
+                    redirectTo: 'https://auna-oncosalud.github.io/panel/recuperar.html'
                 });
 
                 if (error && error.status === 429) {
