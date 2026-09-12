@@ -903,6 +903,13 @@
         cargarAsesorData();
 
         function contactarAsesorWhatsApp() {
+            if (!validar()) {
+                alert("Por favor completa todos los datos antes de contactar a un asesor.");
+                const firstErr = document.querySelector(".invalid");
+                if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
+
             if (!asesorData || !asesorData.celular) {
                 alert("Este asesor no tiene un número de WhatsApp configurado.");
                 return;
@@ -911,12 +918,13 @@
             const celularDigits = String(asesorData.celular).replace(/\D/g, "");
             const phone = celularDigits.length === 9 ? "51" + celularDigits : celularDigits;
 
-            const nombreAsesor = asesorData.agente || USUARIO;
-            const nombreProspecto = document.getElementById("s-nombre").value.trim() || "...";
+            const nombreAsesorCompleto = (asesorData.agente || USUARIO).trim();
+            const nombreAsesor = nombreAsesorCompleto.split(/\s+/)[0];
+            const nombreProspecto = document.getElementById("s-nombre").value.trim();
             const empresa = asesorData.encuesta_empresa || "...";
             const programa = asesorData.encuesta_plan || "...";
 
-            const mensaje = `Hola *${nombreAsesor}*! Mi nombre es ${nombreProspecto}\nEstuvimos en la empresa *${empresa}* y me gustaría que me brindes más información sobre el programa *${programa}*`;
+            const mensaje = `Hola *${nombreAsesor}*! Mi nombre es ${nombreProspecto}\n\nEstuvimos en la empresa *${empresa}* y me gustaría que me brindes más información sobre el programa *${programa}*\n\n¡Muchas gracias!`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`, "_blank");
         }
