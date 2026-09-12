@@ -549,7 +549,7 @@
                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                 </svg>
                                 <input type="text" id="search-input"
-                                    placeholder="Buscar por nombre, producto, teléfono..." oninput="aplicarFiltros()">
+                                    placeholder="Buscar por nombre, DNI, empresa, teléfono..." oninput="aplicarFiltros()">
                             </div>
 
                             <div id="tabla-registros">
@@ -701,6 +701,41 @@
                                     <div class="instruccion-num">3</div>
                                     <p>Los datos se guardan automáticamente en tus registros</p>
                                 </div>
+                            </div>
+
+                            <div class="link-section" style="margin-top: 1.5rem;">
+                                <label class="link-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.93 7.93 0 0 0 3.8 1h0a7.94 7.94 0 0 0 7.94-7.93 7.9 7.9 0 0 0-2.34-5.6z" />
+                                    </svg>
+                                    Datos de campaña para el mensaje de WhatsApp
+                                </label>
+                                <p class="encuesta-sub" style="margin-bottom: 0.75rem;">
+                                    Esta información se usa para armar el mensaje cuando un prospecto te contacta desde
+                                    tu encuesta.
+                                </p>
+                                <div class="form-grid" style="display:grid; gap:12px; margin-bottom: 12px;">
+                                    <div class="field-group full-width" style="margin-bottom:0;">
+                                        <label for="encuesta-empresa-input">Nombre de la empresa</label>
+                                        <input type="text" id="encuesta-empresa-input"
+                                            placeholder="Ej: Compañía Minera XYZ">
+                                    </div>
+                                    <div class="field-group full-width" style="margin-bottom:0;">
+                                        <label for="encuesta-plan-input">Nombre del programa</label>
+                                        <input type="text" id="encuesta-plan-input" placeholder="Ej: Auna Salud Total">
+                                    </div>
+                                </div>
+                                <button class="btn-download-qr" id="btn-guardar-campania"
+                                    onclick="guardarDatosEncuesta()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                        <polyline points="17 21 17 13 7 13 7 21" />
+                                        <polyline points="7 3 7 8 15 8" />
+                                    </svg>
+                                    <span id="btn-guardar-campania-text">Guardar</span>
+                                </button>
+                                <span id="msg-campania" style="display:block; margin-top:8px; font-size:0.8rem;"></span>
                             </div>
 
                         </div>
@@ -1949,6 +1984,20 @@
                                 autocomplete="off">
                         </div>
                         <span class="team-input-hint">Se usará para recuperación de clave</span>
+                    </div>
+
+                    <div class="team-input-group">
+                        <label class="team-input-label">Celular (WhatsApp)</label>
+                        <div class="team-input-wrapper">
+                            <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                <line x1="12" y1="18" x2="12.01" y2="18" />
+                            </svg>
+                            <input type="tel" id="new-user-celular" placeholder="Ej: 987654321" maxlength="9"
+                                inputmode="numeric" autocomplete="off">
+                        </div>
+                        <span class="team-input-hint">Número de 9 dígitos, usado para contacto por WhatsApp</span>
                     </div>
 
                     <div class="team-access-preview">
