@@ -172,20 +172,20 @@
                         </svg>
                         Cotizador
                     </button>
-                    <button class="tab" id="tab-cartera" onclick="switchTab('cartera')">
+                    <button class="tab" id="tab-cartera" onclick="switchTab('cartera')" style="display:none">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                             <line x1="2" y1="10" x2="22" y2="10"></line>
                         </svg>
                         Cartera
                     </button>
-                    <button class="tab" id="tab-proyeccion" onclick="switchTab('proyeccion')">
+                    <button class="tab" id="tab-proyeccion" onclick="switchTab('proyeccion')" style="display:none">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
                         Proyección
                     </button>
-                    <button class="tab" id="tab-calidad" onclick="switchTab('calidad')">
+                    <button class="tab" id="tab-calidad" onclick="switchTab('calidad')" style="display:none">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -261,7 +261,7 @@
                                 <span class="mobile-nav-item-sub">Calcular precios de planes</span>
                             </div>
                         </button>
-                        <button class="mobile-nav-item" id="mnav-cartera"
+                        <button class="mobile-nav-item" id="mnav-cartera" style="display:none"
                             onclick="switchTab('cartera'); closeMobileNav()">
                             <div class="mobile-nav-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -274,7 +274,7 @@
                                 <span class="mobile-nav-item-sub">Seguimiento de pagos</span>
                             </div>
                         </button>
-                        <button class="mobile-nav-item" id="mnav-proyeccion"
+                        <button class="mobile-nav-item" id="mnav-proyeccion" style="display:none"
                             onclick="switchTab('proyeccion'); closeMobileNav()">
                             <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -285,7 +285,7 @@
                                 <span class="mobile-nav-item-sub">Registrar proyección del día</span>
                             </div>
                         </button>
-                        <button class="mobile-nav-item" id="mnav-calidad"
+                        <button class="mobile-nav-item" id="mnav-calidad" style="display:none"
                             onclick="switchTab('calidad'); closeMobileNav()">
                             <div class="mobile-nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -319,6 +319,27 @@
 
                         <form id="barrido-form" novalidate>
                             <div class="form-grid">
+
+                                <div class="field-group full-width">
+                                    <label for="empresa">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path
+                                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                        </svg>
+                                        Empresa
+                                    </label>
+                                    <div class="select-wrap">
+                                        <select id="empresa" required>
+                                            <option value="" disabled selected>Selecciona una empresa</option>
+                                            <option value="__add__">➕ Agregar empresa</option>
+                                        </select>
+                                        <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
+                                    </div>
+                                    <span class="field-error" id="err-empresa"></span>
+                                </div>
 
                                 <div class="field-group full-width">
                                     <label for="nombre">
@@ -790,17 +811,23 @@
                                 <span id="cot_actuarial-status" class="cot-toggle-status cot-status-off">Off</span>
                             </button>
 
-                            <button id="cot_btnPago" onclick="cot_togglePago()" class="cot-toggle-btn active">
+                            <div class="cot-toggle-btn cot-anio-wrap">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                                    <line x1="2" y1="10" x2="22" y2="10" />
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                                 <div class="cot-toggle-text">
-                                    <span class="cot-toggle-label">Método de Pago</span>
-                                    <span class="cot-toggle-sub">Crédito / Débito</span>
+                                    <span class="cot-toggle-label">Año de Tarifario</span>
+                                    <span class="cot-toggle-sub">Solo para el cálculo, no se muestra</span>
                                 </div>
-                                <span id="cot_pago-status" class="cot-toggle-status cot-status-on">Crédito</span>
-                            </button>
+                                <select id="cot_anioGlobal" onchange="cot_seleccionarAnio(this.value)"
+                                    class="cot-anio-select">
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2025">2025</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="field-group">
@@ -816,7 +843,7 @@
                                     <option value="Plan Auna salud Classic">Plan Auna salud Classic</option>
                                     <option value="Plan Auna salud Premium">Plan Auna salud Premium</option>
                                     <option value="Plan Auna salud Senior">Plan Auna salud Senior</option>
-                                    <option value="Onco Pro">Onco Pro</option>
+                                    <option value="Plan Auna salud Padres">Plan Auna salud Padres</option>
                                     <option value="Onco Plus">Onco Plus</option>
                                 </select>
                                 <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -874,7 +901,8 @@
                         </div>
 
                         <div id="cot_botonesAsesor" class="cot-btns">
-                            <button onclick="cot_exportarCotizacion(true)" class="btn-primary cot-btn-main">
+                            <button id="cot_btn-con-descuento" onclick="cot_exportarCotizacion(true)"
+                                class="btn-primary cot-btn-main">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                     <polyline points="7 10 12 15 17 10" />
@@ -882,7 +910,8 @@
                                 </svg>
                                 Descargar Con Descuento
                             </button>
-                            <button onclick="cot_exportarCotizacion(false)" class="cot-btn-secondary">
+                            <button id="cot_btn-sin-descuento" onclick="cot_exportarCotizacion(false)"
+                                class="cot-btn-secondary">
                                 Descargar Sin Descuento
                             </button>
                             <button onclick="window.open('https://linkventa.auna.pe/iniciar-sesion/', '_blank')"
@@ -1916,7 +1945,7 @@
                     </svg>
                 </div>
                 <div class="team-header-text">
-                    <h3>Gestión de Equipo</h3>
+                    <h3 id="team-modal-title">Gestión de Equipo</h3>
                     <p id="team-subtitle">Administra los accesos de tu grupo</p>
                 </div>
                 <button class="modal-close-btn" onclick="closeTeamModal()">
@@ -1927,6 +1956,86 @@
                 </button>
             </div>
 
+            <div class="team-tabs" id="team-top-tabs" style="display:none">
+                <button onclick="switchTeamSection('empresas')" id="top-tab-empresas" class="team-tab active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    </svg>
+                    Empresas
+                </button>
+                <button onclick="switchTeamSection('usuarios')" id="top-tab-usuarios" class="team-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Usuarios
+                </button>
+            </div>
+
+            <div id="team-top-empresas" class="team-top-section">
+                <div class="team-sections-container">
+                    <div class="team-input-group" style="margin-bottom: 12px;">
+                        <label class="team-input-label">Nombre de la empresa</label>
+                        <div class="team-input-wrapper">
+                            <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            </svg>
+                            <input type="text" id="empresa-nombre-input" placeholder="Ej: Compañía Minera XYZ"
+                                autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="team-input-group" style="margin-bottom: 12px;">
+                        <label class="team-input-label">RUC</label>
+                        <div class="team-input-wrapper">
+                            <svg class="team-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="16" rx="2" />
+                                <line x1="7" y1="9" x2="17" y2="9" />
+                                <line x1="7" y1="13" x2="13" y2="13" />
+                            </svg>
+                            <input type="tel" id="empresa-ruc-input" placeholder="Ej: 20123456789" maxlength="11"
+                                inputmode="numeric" autocomplete="off">
+                        </div>
+                        <span class="team-input-hint">Número de 11 dígitos</span>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="guardarEmpresa()" id="btn-guardar-empresa" class="team-submit-btn"
+                            style="margin-top:4px;">
+                            <span class="btn-text">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    style="width: 18px; height: 18px;">
+                                    <path d="M12 5v14M5 12h14" />
+                                </svg>
+                                Agregar Empresa
+                            </span>
+                            <div class="btn-loader" style="display: none;">
+                                <div class="spinner-mini"></div>
+                                Procesando...
+                            </div>
+                        </button>
+                        <button onclick="cancelarEdicionEmpresa()" id="btn-cancelar-empresa" class="btn-cancel"
+                            style="display:none; margin-top:4px; width:auto;">
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <div class="team-list-header" style="margin-top: 1.5rem;">
+                        <p>Empresas registradas</p>
+                    </div>
+                    <div id="empresas-list" class="team-members-scroll">
+                        <!-- Se llena vía JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="team-top-usuarios" class="team-top-section" style="display:none">
             <div class="team-tabs">
                 <button onclick="switchTeamTab('crear')" id="tab-team-crear" class="team-tab active">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2044,6 +2153,7 @@
                         <!-- Se llena vía JS -->
                     </div>
                 </div>
+            </div>
             </div>
 
             <div id="team-msg-container" class="team-message-bar" style="display: none;">
