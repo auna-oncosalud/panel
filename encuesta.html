@@ -254,6 +254,45 @@
             appearance: none;
         }
 
+        .select-wrap {
+            position: relative;
+        }
+
+        select {
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            color: var(--slate-900);
+            font-weight: 500;
+            background: var(--slate-50);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            padding: 13px 40px 13px 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        select:focus {
+            border-color: var(--blue-500);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(0, 123, 195, 0.12);
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--slate-400);
+            pointer-events: none;
+        }
+
         input::placeholder {
             color: var(--slate-300);
             font-weight: 400;
@@ -280,6 +319,13 @@
             font-size: 0.75rem;
             color: var(--slate-400);
             margin-top: 4px;
+        }
+
+        .field-optional {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--slate-400);
+            text-transform: none;
         }
 
         .field-error {
@@ -411,6 +457,59 @@
             opacity: 0.65;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-row .btn-submit {
+            width: auto;
+            flex: 1;
+            margin-top: 0;
+        }
+
+        .btn-whatsapp {
+            flex: 1;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all var(--transition);
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+        }
+
+        .btn-whatsapp svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-whatsapp:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(37, 211, 102, 0.45);
+        }
+
+        .btn-whatsapp:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 480px) {
+            .btn-row {
+                flex-direction: column;
+            }
         }
 
         .submit-note {
@@ -631,15 +730,41 @@
                 </p>
 
                 <div class="field-group">
+                    <label class="field-label" for="s-empresa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        </svg>
+                        ¿En qué empresa trabajas?
+                    </label>
+                    <input type="text" id="s-empresa" placeholder="Ej: Compañía Minera XYZ" autocomplete="organization">
+                    <span class="field-error" id="err-s-empresa"></span>
+                </div>
+
+                <div class="field-group">
                     <label class="field-label" for="s-nombre">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                             <circle cx="12" cy="7" r="4" />
                         </svg>
-                        Nombre y Apellido
+                        Nombres y Apellidos
                     </label>
                     <input type="text" id="s-nombre" placeholder="Ej: María García López" autocomplete="name">
                     <span class="field-error" id="err-s-nombre"></span>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="s-dni">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <line x1="7" y1="9" x2="17" y2="9" />
+                            <line x1="7" y1="13" x2="13" y2="13" />
+                        </svg>
+                        DNI
+                    </label>
+                    <input type="tel" id="s-dni" placeholder="Ej: 45678912" maxlength="8" inputmode="numeric">
+                    <span class="field-hint">Ingresa tu número de 8 dígitos</span>
+                    <span class="field-error" id="err-s-dni"></span>
                 </div>
 
                 <div class="field-group">
@@ -648,7 +773,7 @@
                             <path
                                 d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.07-1.07a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
                         </svg>
-                        Número de Teléfono
+                        Celular
                     </label>
                     <input type="tel" id="s-telefono" placeholder="Ej: 987654321" maxlength="9" inputmode="numeric"
                         autocomplete="tel">
@@ -657,79 +782,53 @@
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label" for="s-edad">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        Edad
-                    </label>
-                    <input type="tel" id="s-edad" placeholder="Ej: 35" maxlength="3" inputmode="numeric">
-                    <span class="field-error" id="err-s-edad"></span>
-                </div>
-
-                <div class="form-divider"></div>
-
-                <div class="field-group">
-                    <label class="field-label">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                        </svg>
-                        ¿Actualmente cuentas con algún plan de salud?
-                    </label>
-                    <div class="options-grid" id="opts-plan">
-                        <button class="option-card" type="button" onclick="selectOpcion('plan', 'Sí', this)">
-                            <span class="option-emoji">✅</span>
-                            <div class="option-radio">
-                                <div class="option-radio-dot"></div>
-                            </div>
-                            <span class="option-text">Sí, cuento con uno</span>
-                        </button>
-                        <button class="option-card" type="button" onclick="selectOpcion('plan', 'No', this)">
-                            <span class="option-emoji">❌</span>
-                            <div class="option-radio">
-                                <div class="option-radio-dot"></div>
-                            </div>
-                            <span class="option-text">No, aún no tengo</span>
-                        </button>
-                    </div>
-                    <span class="field-error" id="err-plan"></span>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">
+                    <label class="field-label" for="s-programa">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
-                        ¿Actualmente cuentas con algún seguro oncológico?
+                        Programa de interés
                     </label>
-                    <div class="options-grid" id="opts-seguro">
-                        <button class="option-card" type="button" onclick="selectOpcion('seguro', 'Sí', this)">
-                            <span class="option-emoji">✅</span>
-                            <div class="option-radio">
-                                <div class="option-radio-dot"></div>
-                            </div>
-                            <span class="option-text">Sí, cuento con uno</span>
-                        </button>
-                        <button class="option-card" type="button" onclick="selectOpcion('seguro', 'No', this)">
-                            <span class="option-emoji">❌</span>
-                            <div class="option-radio">
-                                <div class="option-radio-dot"></div>
-                            </div>
-                            <span class="option-text">No, aún no tengo</span>
-                        </button>
+                    <div class="select-wrap">
+                        <select id="s-programa">
+                            <option value="Oncosalud" selected>Oncosalud</option>
+                            <option value="Auna Salud">Auna Salud</option>
+                        </select>
+                        <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
                     </div>
-                    <span class="field-error" id="err-seguro"></span>
                 </div>
 
-                <button class="btn-submit" id="btn-submit" type="button" onclick="enviarEncuesta()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                    ¡Quiero mi asesoría gratuita!
-                </button>
+                <div class="field-group">
+                    <label class="field-label" for="s-correo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        Correo <span class="field-optional">(opcional)</span>
+                    </label>
+                    <input type="text" id="s-correo" placeholder="Ej: maria@correo.com" autocomplete="email">
+                    <span class="field-error" id="err-s-correo"></span>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-submit" id="btn-submit" type="button" onclick="enviarEncuesta()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        ¡Quiero mi asesoría gratuita!
+                    </button>
+
+                    <button class="btn-whatsapp" id="btn-whatsapp" type="button" onclick="contactarAsesorWhatsApp()"
+                        disabled title="Cargando datos del asesor...">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.93 7.93 0 0 0 3.8 1h0a7.94 7.94 0 0 0 7.94-7.93 7.9 7.9 0 0 0-2.34-5.6zM12.05 18.53h0a6.6 6.6 0 0 1-3.37-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.6 6.6 0 0 1 5.6-10.16 6.56 6.56 0 0 1 4.66 1.93 6.56 6.56 0 0 1 1.93 4.67 6.6 6.6 0 0 1-6.59 6.6zm3.6-4.94c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.5.64-.62.77-.11.13-.23.15-.43.05a5.4 5.4 0 0 1-1.6-.98 6 6 0 0 1-1.1-1.37c-.12-.2 0-.3.09-.4.1-.1.2-.23.3-.35.1-.12.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.45-1.08-.62-1.48-.16-.39-.33-.34-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.67 0 .98.72 1.93.82 2.06.1.13 1.4 2.14 3.4 3 .47.2.85.33 1.14.42.48.15.92.13 1.26.08.38-.06 1.17-.48 1.34-.94.16-.46.16-.85.11-.94-.05-.09-.18-.14-.38-.24z" />
+                        </svg>
+                        Quiero contactar con un asesor
+                    </button>
+                </div>
 
                 <p class="submit-note">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -780,8 +879,47 @@
 
         const USUARIO = decodeURIComponent(new URLSearchParams(window.location.search).get("u") || "encuesta");
 
-        let planSeleccionado = null;
-        let seguroSeleccionado = null;
+        let asesorData = null;
+
+        async function cargarAsesorData() {
+            const btnWa = document.getElementById("btn-whatsapp");
+            try {
+                const { data, error } = await supabaseClient
+                    .rpc('obtener_datos_encuesta', { p_usuario: USUARIO })
+                    .single();
+                if (error) throw error;
+                asesorData = data;
+            } catch (err) {
+                console.error("No se pudo cargar el asesor:", err);
+                asesorData = null;
+            } finally {
+                if (btnWa) {
+                    const disponible = !!(asesorData && asesorData.celular);
+                    btnWa.disabled = !disponible;
+                    btnWa.title = disponible ? "" : "Este asesor no tiene WhatsApp configurado";
+                }
+            }
+        }
+        cargarAsesorData();
+
+        function contactarAsesorWhatsApp() {
+            if (!asesorData || !asesorData.celular) {
+                alert("Este asesor no tiene un número de WhatsApp configurado.");
+                return;
+            }
+
+            const celularDigits = String(asesorData.celular).replace(/\D/g, "");
+            const phone = celularDigits.length === 9 ? "51" + celularDigits : celularDigits;
+
+            const nombreAsesor = asesorData.agente || USUARIO;
+            const nombreProspecto = document.getElementById("s-nombre").value.trim() || "...";
+            const empresa = asesorData.encuesta_empresa || "...";
+            const programa = asesorData.encuesta_plan || "...";
+
+            const mensaje = `Hola *${nombreAsesor}*! Mi nombre es ${nombreProspecto}\nEstuvimos en la empresa *${empresa}* y me gustaría que me brindes más información sobre el programa *${programa}*`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`, "_blank");
+        }
 
         function soloDigitos(id, max) {
             const el = document.getElementById(id);
@@ -792,46 +930,53 @@
             });
         }
         soloDigitos("s-telefono", 9);
-        soloDigitos("s-edad", 3);
+        soloDigitos("s-dni", 8);
 
-        ["s-nombre", "s-telefono", "s-edad"].forEach(id => {
+        ["s-empresa", "s-nombre", "s-dni", "s-telefono", "s-correo"].forEach(id => {
             document.getElementById(id).addEventListener("input", () => {
                 document.getElementById(id).classList.remove("invalid");
                 document.getElementById("err-" + id).textContent = "";
             });
         });
 
-        function selectOpcion(campo, valor, btn) {
-            const grupoId = campo === "plan" ? "opts-plan" : "opts-seguro";
-            document.querySelectorAll("#" + grupoId + " .option-card").forEach(c => c.classList.remove("selected"));
-            btn.classList.add("selected");
-            if (campo === "plan") planSeleccionado = valor;
-            if (campo === "seguro") seguroSeleccionado = valor;
-            document.getElementById("err-" + campo).textContent = "";
-        }
-
         function validar() {
             let ok = true;
+
+            const empresa = document.getElementById("s-empresa").value.trim();
+            if (empresa.length < 2) {
+                document.getElementById("s-empresa").classList.add("invalid");
+                document.getElementById("err-s-empresa").textContent = "Ingresa el nombre de la empresa";
+                ok = false;
+            }
+
             const nombre = document.getElementById("s-nombre").value.trim();
             if (nombre.length < 3) {
                 document.getElementById("s-nombre").classList.add("invalid");
                 document.getElementById("err-s-nombre").textContent = "Ingresa tu nombre completo";
                 ok = false;
             }
+
+            const dni = document.getElementById("s-dni").value;
+            if (!/^\d{8}$/.test(dni)) {
+                document.getElementById("s-dni").classList.add("invalid");
+                document.getElementById("err-s-dni").textContent = "El DNI debe tener exactamente 8 dígitos";
+                ok = false;
+            }
+
             const tel = document.getElementById("s-telefono").value;
             if (!/^\d{9}$/.test(tel)) {
                 document.getElementById("s-telefono").classList.add("invalid");
-                document.getElementById("err-s-telefono").textContent = "El teléfono debe tener exactamente 9 dígitos";
+                document.getElementById("err-s-telefono").textContent = "El celular debe tener exactamente 9 dígitos";
                 ok = false;
             }
-            const edad = parseInt(document.getElementById("s-edad").value, 10);
-            if (!edad || edad < 1 || edad > 120) {
-                document.getElementById("s-edad").classList.add("invalid");
-                document.getElementById("err-s-edad").textContent = "Ingresa una edad válida (1–120)";
+
+            const correo = document.getElementById("s-correo").value.trim();
+            if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                document.getElementById("s-correo").classList.add("invalid");
+                document.getElementById("err-s-correo").textContent = "Ingresa un correo válido";
                 ok = false;
             }
-            if (!planSeleccionado) { document.getElementById("err-plan").textContent = "Por favor selecciona una opción"; ok = false; }
-            if (!seguroSeleccionado) { document.getElementById("err-seguro").textContent = "Por favor selecciona una opción"; ok = false; }
+
             return ok;
         }
 
@@ -865,11 +1010,15 @@
                 fecha: String(fechaLima()),
                 nombre: String(document.getElementById("s-nombre").value.trim()),
                 telefono: String(document.getElementById("s-telefono").value.replace(/\s/g, "")),
-                edad: String(document.getElementById("s-edad").value),
+                edad: "",
                 producto: "",
                 temperatura: "",
                 referencia: "",
-                comentarios: String(`Plan de salud: ${planSeleccionado}. Seguro oncológico: ${seguroSeleccionado}.`),
+                comentarios: "",
+                empresa: String(document.getElementById("s-empresa").value.trim()),
+                dni: String(document.getElementById("s-dni").value),
+                correo: String(document.getElementById("s-correo").value.trim()),
+                programa_interes: String(document.getElementById("s-programa").value),
             };
 
             try {
