@@ -1036,7 +1036,7 @@
         }
         cargarAsesorData();
 
-        function contactarAsesorWhatsApp() {
+        async function contactarAsesorWhatsApp() {
             if (!validar()) {
                 mostrarPopup("Por favor completa todos los datos antes de contactar a un asesor.", { titulo: "Faltan datos" });
                 const firstErr = document.querySelector(".invalid");
@@ -1048,6 +1048,32 @@
                 mostrarPopup("Este asesor no tiene un número de WhatsApp configurado.", { titulo: "No disponible", tipo: "info" });
                 return;
             }
+
+            const btnWa = document.getElementById("btn-whatsapp");
+            const textoOriginalWa = btnWa.innerHTML;
+            btnWa.disabled = true;
+            btnWa.innerHTML = `<span class="spinner"></span> Guardando...`;
+
+            // Guardamos el registro igual que en "¡Quiero mi asesoría gratuita!",
+            // salvo que ya se haya guardado antes (evita duplicados).
+            if (!leadYaGuardado) {
+                try {
+                    const { error } = await supabaseClient.from('leads').insert([construirDatosLead()]);
+                    if (error) {
+                        console.error("Detalles DB (WhatsApp):", error);
+                        throw error;
+                    }
+                    leadYaGuardado = true;
+                } catch (err) {
+                    btnWa.disabled = false;
+                    btnWa.innerHTML = textoOriginalWa;
+                    mostrarPopup("Hubo un error al guardar tus datos. Por favor intenta de nuevo.", { titulo: "Ups, algo falló" });
+                    return;
+                }
+            }
+
+            btnWa.disabled = false;
+            btnWa.innerHTML = textoOriginalWa;
 
             const celularDigits = String(asesorData.celular).replace(/\D/g, "");
             const phone = celularDigits.length === 9 ? "51" + celularDigits : celularDigits;
@@ -1135,19 +1161,9 @@
             return `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")} ${ampm}`;
         }
 
-        async function enviarEncuesta() {
-            if (!validar()) {
-                const firstErr = document.querySelector(".invalid");
-                if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
-                return;
-            }
-
-            const btn = document.getElementById("btn-submit");
-            btn.disabled = true;
-            btn.innerHTML = `<span class="spinner"></span> Enviando...`;
-
-            // Usando String() explícito para asegurar perfecta inserción en la BD
-            const datos = {
+        // Usando String() explícito para asegurar perfecta inserción en la BD
+        function construirDatosLead() {
+            return {
                 usuario: String(USUARIO),
                 fecha: String(fechaLima()),
                 nombre: String(document.getElementById("s-nombre").value.trim()),
@@ -1162,8 +1178,33 @@
                 correo: String(document.getElementById("s-correo").value.trim()),
                 programa_interes: String(document.getElementById("s-programa").value),
             };
+        }
+
+        // Evita que, si el prospecto guarda con un botón y luego hace clic en el otro,
+        // el mismo registro se inserte dos veces en "leads".
+        let leadYaGuardado = false;
+
+        async function enviarEncuesta() {
+            if (!validar()) {
+                const firstErr = document.querySelector(".invalid");
+                if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
+
+            const btn = document.getElementById("btn-submit");
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> Enviando...`;
+
+            const datos = construirDatosLead();
 
             try {
+                if (leadYaGuardado) {
+                    // Ya se guardó desde el botón de WhatsApp; solo mostramos éxito.
+                    document.getElementById("survey-body").style.display = "none";
+                    document.getElementById("screen-success").style.display = "block";
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    return;
+                }
                 const { error } = await supabaseClient.from('leads').insert([datos]);
                 if (error) {
                     console.error("Detalles DB (Encuesta):", error);
