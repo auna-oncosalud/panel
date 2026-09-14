@@ -97,6 +97,9 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .survey-header::before {
@@ -112,9 +115,12 @@
         }
 
         .survey-logo {
+            display: block;
             width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin: 0 auto 1.25rem;
             border-radius: 10px;
-            margin-bottom: 1.25rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
             position: relative;
             z-index: 1;
@@ -825,7 +831,7 @@
 
                 <p class="form-intro">
                     Déjanos tus datos y un especialista Auna te presentará las mejores opciones de cobertura adaptadas a
-                    tu situación. <strong>¡Es completamente gratis!</strong>
+                    tu situación.
                 </p>
 
                 <div class="field-group">
