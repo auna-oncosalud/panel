@@ -998,7 +998,12 @@
         // SOLUCIÓN DE CONFLICTO: Cambiamos a supabaseClient
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const USUARIO = decodeURIComponent(new URLSearchParams(window.location.search).get("u") || "encuesta");
+        // QRs impresos de una cuenta que deben redirigir a otra cuenta (leads y datos de WhatsApp)
+        const ALIAS_QR = {
+            "franksoto": "frank.soto",
+        };
+        const U_QR = decodeURIComponent(new URLSearchParams(window.location.search).get("u") || "encuesta");
+        const USUARIO = ALIAS_QR[U_QR.toLowerCase()] || U_QR;
 
         let asesorData = null;
 
